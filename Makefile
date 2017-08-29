@@ -16,9 +16,9 @@ OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
 
 DEBUG    = -g -Wall
 OPT      = -O3
-INCLUDES = 
+INCLUDES = -T/$(H55)/include
 CFLAGS   = -c $(INCLUDES)
-LDFLAGS  = -framework Accelerate -lm -lz 
+LDFLAGS  = -L$(H55)/lib -lhdf5 -framework Accelerate -lm -lz 
 
 ifeq ($(strip $(USE_DEBUG)), 1)
 	CFLAGS += $(DEBUG)

@@ -11,5 +11,5 @@ void imageEul(struct Camera *cam, double *x, double tMAX, void *args)
 
     camera_set_position(cam, x, u, args);
 
-    trace(cam, tMAX, 1617, target_eq_sph, args);
+    trace(cam, tMAX, 10, &target_eq_sph, args);
 }

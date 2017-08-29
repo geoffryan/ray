@@ -3,10 +3,11 @@
 #include <stdlib.h>
 #include "metric.h"
 #include "ode.h"
+#include "output.h"
 #include "trace.h"
 
 void trace(struct Camera *cam, double tMAX, int track_thin,
-            int target(double, double *, double *, double *, void *),
+            int (*target)(double, double *, double *, double *, void *),
             void *args)
 {
     int mu, nu, i, n;
@@ -15,7 +16,7 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
 
     int N = cam->N;
 
-    double *map = (double *) malloc(19*N*sizeof(double));
+    double *map = (double *) malloc(20*N*sizeof(double));
 
     metric_g(g, cam->X, args);
 
@@ -39,20 +40,63 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
         printf("   u: %.6lf %.6lf %.6lf %.6lf\n",
                     xu0[4], xu0[5], xu0[6], xu0[7]);
 
+        double t0, t1, xu1[8];
+        int status, iter, id;
+        id = n % track_thin == 0 ? n : -1;
+        t0 = 0.0;
+       
+        trace_single(&status, &iter, &t1, xu1, t0, xu0, tMAX, id, target, 
+                        args);
+
+        printf("    %d iterations - t: %.6lf\n", iter, t1);
+
+        map[20*n + 0] = cam->thC[2*n];
+        map[20*n + 1] = cam->thC[2*n+1];
+        map[20*n + 2] = t0;
+        map[20*n + 3] = t1;
+        for(i=0; i<8; i++)
+            map[20*n+i+4] = xu0[i];
+        for(i=0; i<8; i++)
+            map[20*n+i+12] = xu1[i];
+    }
+
+    output_map_h5(map, N, "map.h5");
+
+    char fname[] = "map.txt";
+    f = fopen(fname, "w");
+    for(n=0; n<N; n++)
+    {
+        fprintf(f, "%.6lf", map[20*n]);
+        for(i=1; i<20; i++)
+            fprintf(f, " %.6lf", map[20*n+i]);
+        fprintf(f, "\n");
+    }
+    fclose(f);
+
+    free(map);
+}
+
+void trace_single(int *status, int *iter, double *t1, double *xu1, 
+                double t0, double *xu0, double tMAX, int n,
+                int (*target)(double, double *, double *, double *, void *),
+                void *args)
+{
         double xu[8];
-        double xu1[8];
+        int mu;
+
         for(mu=0; mu<8; mu++)
         {
             xu[mu] = xu0[mu];
             xu1[mu] = xu0[mu];
         }
 
-        double t = 0;
+        double t = t0;
         double dt = -1.0e-6;
         double dt0;
-        int status;
 
-        if(n % track_thin == 0)
+        FILE *f;
+
+        if(n >= 0)
         {
             char fname[256];
             sprintf(fname, "track_%04d.txt", n);
@@ -64,7 +108,7 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
             fprintf(f, "\n");
         }
 
-        i=0;
+        int i = 0;
         while(fabs(t) < fabs(tMAX))
         {
             //printf("      %d: %.6lf\n", i, t);
@@ -77,7 +121,7 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
             t += dt0;
             i++;
             
-            if(n % track_thin == 0)
+            if(n >= 0)
             {
                 fprintf(f, "%.12lg", t);
                 for(mu=0; mu<8; mu++)
@@ -85,42 +129,18 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
                 fprintf(f, "\n");
             }
 
-            status = target(t-dt0, xu, &t, xu1, args);
+            *status = target(t-dt0, xu, &t, xu1, args);
             //printf("        target - status: %.6d\n", status);
 
-            if(status != 0)
+            if(*status != 0)
                 break;
-
         }
 
-        if(n % track_thin == 0)
-        {
+        if(n >= 0)
             fclose(f);
-        }
 
-        printf("    %d iterations - t: %.6lf\n", i, t);
-
-        map[19*n + 0] = cam->thC[2*n];
-        map[19*n + 1] = cam->thC[2*n+1];
-        map[19*n + 2] = t;
-        for(i=0; i<8; i++)
-            map[19*n+i+3] = xu0[i];
-        for(i=0; i<8; i++)
-            map[19*n+i+11] = xu1[i];
-    }
-
-    char fname[] = "map.txt";
-    f = fopen(fname, "w");
-    for(n=0; n<N; n++)
-    {
-        fprintf(f, "%.6lf", map[19*n]);
-        for(i=1; i<19; i++)
-            fprintf(f, " %.6lf", map[19*n+i]);
-        fprintf(f, "\n");
-    }
-    fclose(f);
-
-    free(map);
+        *t1 = t;
+        *iter = i;
 }
 
 void trace_xudot(double t, double *xu, void *args, double *xudot)

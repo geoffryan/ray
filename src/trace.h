@@ -4,9 +4,13 @@
 #include "camera.h"
 
 void trace(struct Camera *cam, double tMAX, int track_thin,
-            int target(double, double *, double *, double *, void *),
+            int (*target)(double, double *, double *, double *, void *),
             void *args);
 
+void trace_single(int *status, int *iter, double *t1, double *xu1, 
+                double t0, double *xu0, double tMAX, int n,
+                int (*target)(double, double *, double *, double *, void *),
+                void *args);
 void trace_xudot(double t, double *xu, void *args, double *xudot);
 
 int target_eq_cart(double ta, double *xua, double *tb, double *xub, 

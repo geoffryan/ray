@@ -5,6 +5,9 @@
 #C Compiler
 CC       = gcc
 
+#HDF5 Library
+H55      = /usr/local
+
 #Compile flags
 USE_OMP   = 0
 OMP_FLAG    = -fopenmp

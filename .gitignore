@@ -1,0 +1,7 @@
+Makefile.in
+bin/*
+obj/*
+*.txt
+*.png
+*.h5
+*.swp
