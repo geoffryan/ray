@@ -33,38 +33,38 @@ void output_map_h5(double *map, int Nrays, char *filename)
     hsize_t f_start[2] = {0,0};
 
     createFile(filename);
-    createGroup(filename, "Rays");
+    createGroup(filename, "Map");
 
     map_start[0] = 0;
 
     fdims2[0] = Nrays;
     fdims2[1] = 2;
-    createDataset(filename, "Rays", "t", 2, fdims2, H5T_NATIVE_DOUBLE);
-    createDataset(filename, "Rays", "thC", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "t", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "thC", 2, fdims2, H5T_NATIVE_DOUBLE);
     map_start[1] = 0;
-    writePatch(filename, "Rays", "thC", map, H5T_NATIVE_DOUBLE, 2, 
+    writePatch(filename, "Map", "thC", map, H5T_NATIVE_DOUBLE, 2, 
                 map_start, f_start, fdims2, mapdims, fdims2);
     map_start[1] = 2;
-    writePatch(filename, "Rays", "t", map, H5T_NATIVE_DOUBLE, 2, 
+    writePatch(filename, "Map", "t", map, H5T_NATIVE_DOUBLE, 2, 
                 map_start, f_start, fdims2, mapdims, fdims2);
     
     fdims2[0] = Nrays;
     fdims2[1] = 4;
-    createDataset(filename, "Rays", "x0", 2, fdims2, H5T_NATIVE_DOUBLE);
-    createDataset(filename, "Rays", "u0", 2, fdims2, H5T_NATIVE_DOUBLE);
-    createDataset(filename, "Rays", "x1", 2, fdims2, H5T_NATIVE_DOUBLE);
-    createDataset(filename, "Rays", "u1", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "x0", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "u0", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "x1", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "u1", 2, fdims2, H5T_NATIVE_DOUBLE);
     map_start[1] = 4;
-    writePatch(filename, "Rays", "x0", map, H5T_NATIVE_DOUBLE, 2,
+    writePatch(filename, "Map", "x0", map, H5T_NATIVE_DOUBLE, 2,
                 map_start, f_start, fdims2, mapdims, fdims2);
     map_start[1] = 8;
-    writePatch(filename, "Rays", "u0", map, H5T_NATIVE_DOUBLE, 2,
+    writePatch(filename, "Map", "u0", map, H5T_NATIVE_DOUBLE, 2,
                 map_start, f_start, fdims2, mapdims, fdims2);
     map_start[1] = 12;
-    writePatch(filename, "Rays", "x1", map, H5T_NATIVE_DOUBLE, 2,
+    writePatch(filename, "Map", "x1", map, H5T_NATIVE_DOUBLE, 2,
                 map_start, f_start, fdims2, mapdims, fdims2);
     map_start[1] = 16;
-    writePatch(filename, "Rays", "u1", map, H5T_NATIVE_DOUBLE, 2,
+    writePatch(filename, "Map", "u1", map, H5T_NATIVE_DOUBLE, 2,
                 map_start, f_start, fdims2, mapdims, fdims2);
 }
 

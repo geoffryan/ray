@@ -3,11 +3,17 @@ import math
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import h5py as h5
 
-def kep_u(r, M):
+def kep_u(r, M, a):
     return 0
 
-def intensity_disk_T(x0, x1, x2, x3, u0, u1, u2, u3, T=1.0, M=1.0):
+def intensity_disk_T(X, U, T=1.0, M=1.0):
+
+    x0 = X[:,0]
+    x1 = X[:,1]
+    x2 = X[:,2]
+    x3 = X[:,3]
 
     F = np.zeros(x1.shape)
     r = x1
@@ -18,17 +24,30 @@ def intensity_disk_T(x0, x1, x2, x3, u0, u1, u2, u3, T=1.0, M=1.0):
     F[surface] = 1.0 + 0.5*np.cos(x3[surface])
     return F
 
-def intensity_face(x0, x1, x2, x3, u0, u1, u2, u3,R=30.0):
+def intensity_face(X, U, R=30.0):
+
+    x0 = X[:,0]
+    x1 = X[:,1]
+    x2 = X[:,2]
+    x3 = X[:,3]
 
     F = np.zeros(x1.shape)
 
-    r = x1
-    theta = x2
-    phi = x3
+    #r = x1
+    #theta = x2
+    #phi = x3
+    #x = r*np.sin(theta)*np.cos(phi)
+    #y = r*np.sin(theta)*np.sin(phi)
+    #z = r*np.cos(theta)
+    #offsurface = np.fabs(theta-0.5*np.pi) > 1.0e-6
 
-    x = r*np.sin(theta)*np.cos(phi)
-    y = r*np.sin(theta)*np.sin(phi)
-    z = r*np.cos(theta)
+    x = x1
+    y = x2
+    z = x3
+    r = np.sqrt(x*x + y*y + z*z)
+    theta = np.arccos(z/r)
+    phi = np.arctan2(y, x)
+    offsurface = np.fabs(z) > 1.0e-1
 
     F[x*x+y*y < R*R] = 1.0
 
@@ -41,14 +60,19 @@ def intensity_face(x0, x1, x2, x3, u0, u1, u2, u3,R=30.0):
     F[right_eye] = 0.5
     F[mouth] = 0.5
 
-    F[np.fabs(theta-0.5*np.pi) > 1.0e-6] = 0.0
+    F[offsurface] = 0.0
 
     return F
 
 
-def intensity(x0, x1, x2, x3, u0, u1, u2, u3):
+def intensity(X, U):
 
-    F = np.zeros(x1.shape)
+    F = np.zeros(X.shape[0])
+
+    x0 = X[:,0]
+    x1 = X[:,1]
+    x2 = X[:,2]
+    x3 = X[:,3]
 
     surface = np.fabs(x2-0.5*np.pi) < 0.1
 
@@ -57,11 +81,20 @@ def intensity(x0, x1, x2, x3, u0, u1, u2, u3):
 
 def plotMap(ax, mapFilename):
 
-    thC, phC, x0, x1, x2, x3, u0, u1, u2, u3 = np.loadtxt(mapFilename, 
-                    usecols=[0,1,11,12,13,14,15,16,17,18], unpack=True)
+    f = h5.File(mapFilename, "r")
+    skyLoc = f["Map/thC"][...]
+    t = f["Map/t"][...]
+    X0 = f["Map/x0"][...]
+    U0 = f["Map/u0"][...]
+    X1 = f["Map/x1"][...]
+    U1 = f["Map/u1"][...]
+    f.close()
 
-    F = intensity_face(x0, x1, x2, x3, u0, u1, u2, u3)
-    #F = intensity(x0, x1, x2, x3, u0, u1, u2, u3)
+    thC = skyLoc[:,0]
+    phC = skyLoc[:,1]
+
+    F = intensity_face(X1, U1)
+    #F = intensity(X1, U1)
 
     print(F.min(), F.max())
 
@@ -71,10 +104,20 @@ def plotMap(ax, mapFilename):
     ax.set_aspect('equal')
 
 def plotMapNice(mapFilename):
-    thC, phC, x0, x1, x2, x3, u0, u1, u2, u3 = np.loadtxt(mapFilename, 
-                    usecols=[0,1,11,12,13,14,15,16,17,18], unpack=True)
 
-    F = intensity(x0, x1, x2, x3, u0, u1, u2, u3)
+    f = h5.File(mapFilename, "r")
+    skyLoc = f["Map/thC"][...]
+    t = f["Map/t"][...]
+    X0 = f["Map/x0"][...]
+    U0 = f["Map/u0"][...]
+    X1 = f["Map/x1"][...]
+    U1 = f["Map/u1"][...]
+    f.close()
+
+    thC = skyLoc[:,0]
+    phC = skyLoc[:,1]
+
+    F = intensity(X1, U1)
 
     lat = 0.5*np.pi - thC
     lon = phC.copy()

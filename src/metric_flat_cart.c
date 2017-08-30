@@ -5,6 +5,11 @@
 // Flat space metric in cartesian coordinates.
 // x = (t, x, y, z)
 
+int metric_orientation_flat_cart()
+{
+    return CART;
+}
+
 void  metric_g_flat_cart(double *g, double *x, void *args)
 {
     int i;

@@ -68,12 +68,43 @@ void camera_get_ray(struct Camera *cam, double *k, int id)
     double cosp = cos(p);
     double sinp = sin(p);
 
-    // For Cartesian setups
-    //double kc[4] = {1.0, -sint*cosp, -sint*sinp, -cost};
+    double kc[4];
+    // In general, the desired orientation is for a right-handed system, with
+    // "forward" (phi=0,theta=pi/2) towards the origin and "down" (theta=pi)
+    // towards -z.
+    if(metric_orientation() == SPH)
+    {
+        kc[0] = 1.0;
+        kc[1] = sint*cosp;
+        kc[2] = cost;
+        kc[3] = sint*sinp;
+    }
+    else
+    {
+        double x = cam->X[1];
+        double y = cam->X[2];
+        double z = cam->X[3];
+        double r = sqrt(x*x+y*y);
+        double R = sqrt(x*x+y*y+z*z);
+        double cosi = z/R;
+        double sini = r/R;
+        double cosa = x/r;
+        double sina = y/r;
 
-    //For Spherical setups ("down" is towards equator, "forwards" is toward 
-    //origin
-    double kc[4] = {1.0, sint*cosp, cost, sint*sinp};
+        // "Local" frame
+        double kc0[4] = {1.0, -sint*cosp, -sint*sinp, -cost};
+        //Pitch up to align global z
+        double kc1[4] = {kc0[0], sini*kc0[1]+cosi*kc0[3],
+                            kc0[2], -cosi*kc0[1]+sini*kc0[3]};
+        //Rotate (yaw) to align x,y
+        double kc2[4] = {kc1[0], -cosa*kc1[1]+sina*kc1[2],
+                            -sina*kc1[1]-cosa*kc1[2], kc1[3]};
+
+        kc[0] = kc2[0];
+        kc[1] = kc2[1];
+        kc[2] = kc2[2];
+        kc[3] = kc2[3];
+    }
 
     int mu, i;
     for(mu=0; mu<4; mu++)

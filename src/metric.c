@@ -10,6 +10,7 @@ int setup_metric(struct parList *pars)
 
     if(choice == 0)
     {
+        metric_orientation = &metric_orientation_flat_cart;
         metric_g  = &metric_g_flat_cart;
         metric_dg = &metric_dg_flat_cart;
         metric_shadow = &metric_shadow_flat_cart;
@@ -18,6 +19,7 @@ int setup_metric(struct parList *pars)
     }
     else if(choice == 1)
     {
+        metric_orientation = &metric_orientation_flat_sph;
         metric_g  = &metric_g_flat_sph;
         metric_dg = &metric_dg_flat_sph;
         metric_shadow = &metric_shadow_flat_sph;
@@ -26,6 +28,7 @@ int setup_metric(struct parList *pars)
     }
     else if(choice == 2)
     {
+        metric_orientation = &metric_orientation_schw_sc_sph;
         metric_g  = &metric_g_schw_sc_sph;
         metric_dg = &metric_dg_schw_sc_sph;
         metric_shadow = &metric_shadow_schw_sc_sph;
@@ -34,11 +37,30 @@ int setup_metric(struct parList *pars)
     }
     else if(choice == 3)
     {
+        metric_orientation = &metric_orientation_schw_ks_sph;
         metric_g  = &metric_g_schw_ks_sph;
         metric_dg = &metric_dg_schw_ks_sph;
         metric_shadow = &metric_shadow_schw_ks_sph;
         metric_fix_domain = &metric_fix_domain_schw_ks_sph;
         metric_genPosFromSph = &metric_genPosFromSph_sph;
+    }
+    else if(choice == 4)
+    {
+        metric_orientation = &metric_orientation_schw_ks_cart;
+        metric_g  = &metric_g_schw_ks_cart;
+        metric_dg = &metric_dg_schw_ks_cart;
+        metric_shadow = &metric_shadow_schw_ks_cart;
+        metric_fix_domain = &metric_fix_domain_schw_ks_cart;
+        metric_genPosFromSph = &metric_genPosFromSph_cart;
+    }
+    else if(choice == 5)
+    {
+        metric_orientation = &metric_orientation_bin_ks_cart;
+        metric_g  = &metric_g_bin_ks_cart;
+        metric_dg = &metric_dg_bin_ks_cart;
+        metric_shadow = &metric_shadow_bin_ks_cart;
+        metric_fix_domain = &metric_fix_domain_bin_ks_cart;
+        metric_genPosFromSph = &metric_genPosFromSph_cart;
     }
     else
     {

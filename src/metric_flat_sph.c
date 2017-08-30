@@ -5,6 +5,11 @@
 // Flat space metric in spherical polar coordinates.
 // x = (t, r, theta, phi)
 
+int metric_orientation_flat_sph()
+{
+    return SPH;
+}
+
 void  metric_g_flat_sph(double *g, double *x, void *args)
 {
     int i;

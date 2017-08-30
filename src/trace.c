@@ -62,17 +62,6 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
 
     output_map_h5(map, N, "map.h5");
 
-    char fname[] = "map.txt";
-    f = fopen(fname, "w");
-    for(n=0; n<N; n++)
-    {
-        fprintf(f, "%.6lf", map[20*n]);
-        for(i=1; i<20; i++)
-            fprintf(f, " %.6lf", map[20*n+i]);
-        fprintf(f, "\n");
-    }
-    fclose(f);
-
     free(map);
 }
 
@@ -187,7 +176,17 @@ int target_eq_cart(double ta, double *xua, double *tb, double *xub, void *args)
         double zb = xub[3];
 
         if(zb*za < 0)
+        {
             status = 1;
+            
+            double t, xu[8];
+            trace_interpolateToCoordSurface(&t, xu, ta, xua, *tb, xub,
+                                    3, 0.0, args);
+            *tb = t;
+            int mu;
+            for(mu=0; mu<8; mu++)
+                xub[mu] = xu[mu];
+        }
     }
 
     return status;

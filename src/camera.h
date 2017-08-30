@@ -23,7 +23,7 @@ const static struct Camera CAMERA_DEFAULT = {
     .e = {1.,0.,0.,0., 0.,1.,0.,0., 0.,0.,1.,0., 0.,0.,0.,1.},
     .meshType = 0,
     .N = 0,
-    .thC = NULL
+    .thC = NULL,
 };
 
 int setup_camera(struct Camera *cam, struct parList *par);
