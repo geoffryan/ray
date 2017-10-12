@@ -1,8 +1,14 @@
 #include <stdio.h>
 #include <math.h>
+
 #ifdef OSX
 #include <Accelerate/Accelerate.h>
 #endif
+
+#ifdef MKL
+#include <mkl_lapack.h>
+#endif
+
 #include "par.h"
 #include "metric.h"
 
