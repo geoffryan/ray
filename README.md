@@ -45,3 +45,7 @@ This will produce an HDF5 file `map.h5` which contains the skymap of the specifi
 ## Visualizing
 
 An example visualization script `plotAll.py` lives in `vis/`.  It will produce a plot (`plot.png`) showing projections of the tracks and the observer's view. The default image is a winking smiley face, whose orientation can be used for debugging purposes.
+
+```bash
+$ python vis/plotAll.py map.h5 track_*.txt
+```

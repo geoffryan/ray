@@ -14,11 +14,18 @@ SRCS    := $(shell find $(SRCDIR) -name '*.$(SRCEXT)')
 SRCDIRS := $(shell find . -name '*.$(SRCEXT)' -exec dirname {} \; | uniq)
 OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
 
+PLATFORM := $(shell uname -s)
+
 DEBUG    = -g -Wall
 OPT      = -O3
 INCLUDES = -I$(H5I)
 CFLAGS   = -c $(INCLUDES)
-LDFLAGS  = -L$(H5L) -lhdf5 -framework Accelerate -lm -lz 
+LDFLAGS  = -L$(H5L) -lhdf5 -lm
+
+ifeq ($(PLATFORM),Darwin)
+	CFLAGS += -DOSX
+	LDFLAGS += -framework Accelerate
+endif
 
 ifeq ($(strip $(USE_DEBUG)), 1)
 	CFLAGS += $(DEBUG)

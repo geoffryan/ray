@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <math.h>
+#ifdef OSX
 #include <Accelerate/Accelerate.h>
+#endif
 #include "par.h"
 #include "metric.h"
 
