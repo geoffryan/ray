@@ -33,8 +33,13 @@ ifeq ($(strip $(USE_MKL)), 1)
 	INC += -I$(MKLDIR)/include
 	LIB += -L$(MKLDIR)/lib/em64t -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lmkl_lapack
 else
+ifneq ($(strip $(LPI)),)
 	INC += -I$(LPI)
-	LIB += -L$(LPL) -llapack
+endif
+ifneq ($(strip $(LPL)),)
+	LIB += -L$(LPL)
+endif
+	LIB += -llapack
 endif
 endif
 
