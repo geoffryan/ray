@@ -9,13 +9,17 @@ CC       = gcc
 H5I      = /usr/local/include
 H5L      = /usr/local/lib
 
-#Lapack (Linux Only)
+#LAPACK (Linux Only)
+### If your install requires custom include/lib directories, add here.
+### Otherwise leave blank.
 LPI      =
 LPL      =
+### If you're using the Intel Math Kernel Library (MKL) set USE_MKL to 1
+### and set MKLDIR to the MKL directory. LPI and LPL will be ignored.
 USE_MKL  = 0
 MKLDIR   = 
 
-#Compile flags
+# Other Compile flags
 USE_OMP   = 0
 OMP_FLAG  = -fopenmp
 USE_DEBUG = 0  # Compile with symbol table and all warnings
