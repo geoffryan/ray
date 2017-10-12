@@ -1,18 +1,29 @@
-Metric      3
-MeshType    0
+Metric      3       // 0 Flat-Cartesian, 1 Flat-Spherical, 2 Schwarzschild,
+                    // 3 Schwarzschild-KerrSchildSpherical,
+                    // 4 Schwarzschild-KerrSchildCartesian,
+                    // 5 Binary-KerrSchildCartesian
+
+MeshType    0       // 0 Rectangular Array
+
+//Number of rays in each viewing direction
 N1          32
 N2          32
-#X1a         0.0
-#X1b         1.0
-#X2a         -1.0
-#X2b         1.0
+
+//Observer's Theta (X1) and Phi (X2) range.
+//By default Observer's x-axis is directed towards the origin.
+//Angles are in radians, values here are multiples of PI. (0.5 means 0.5*PI).
 X1a         0.4999
 X1b         0.5001
 X2a         -0.0001
 X2b         0.0001
+
+//Observer's position in the spacetime, standard spherical coordinates, 
+//units are degrees. inclination=theta, azimuth=phi.
 distance    1.0e5
 inclination 45.0
 azimuth     0.0
+
+//Unused
 imDim       0
 imX         0
 imPiFac     0

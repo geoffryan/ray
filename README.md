@@ -11,7 +11,7 @@ Solves the geodesic equations to trace null worldlines (light rays) from an obse
 
 ## Installation
 
-Copy `Makefile.in.template` to `Makefile.in` and modify the variables to suit your system (typically just the `H55` variable which should point to your HDF5 installation).  Then just run `make` and you're to go!
+Copy `Makefile.in.template` to `Makefile.in` and modify the variables to suit your system (typically just the `H55` variable which should point to your HDF5 installation).  Then just run `make` and you're good to go!
 
 ```bash
 $ cp Makefile.in.template Makefile.in
