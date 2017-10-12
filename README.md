@@ -47,3 +47,7 @@ An example visualization script `plotAll.py` lives in `vis/`.  It will produce a
 ```bash
 $ python vis/plotAll.py map.h5 track_*.txt
 ```
+
+## Acknowledgements
+
+Thanks to Micha Gorelick for testing on Linux and making me add this README.
