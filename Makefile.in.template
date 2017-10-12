@@ -6,7 +6,8 @@
 CC       = gcc
 
 #HDF5 Library
-H55      = /usr/local
+H5I      = /usr/local/include
+H5L      = /usr/local/lib
 
 #Compile flags
 USE_OMP   = 0

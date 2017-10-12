@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <Accelerate/Accelerate.h>
 #include "par.h"
 #include "metric.h"
