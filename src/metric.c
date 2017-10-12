@@ -3,6 +3,8 @@
 #include "par.h"
 #include "metric.h"
 
+void metric_print_tensor2(double *t, char name[]);
+
 int setup_metric(struct parList *pars)
 {
     int choice = pars->metric;
@@ -81,12 +83,33 @@ void metric_ig(double *ig, double *x, double *g, void *args)
     int lwork = 256;
     double work[256];
 
-    int i;
+    int i, j;
     for(i=0; i<16; i++)
         ig[i] = g[i];
 
+
+    //metric_print_tensor2(ig, "g");
     dsytrf_(&uplo, &n, ig, &lda, ipiv, work, &lwork, &info);
+    //metric_print_tensor2(ig, "ig_temp");
     dsytri_(&uplo, &n, ig, &lda, ipiv, work, &info);
+    //metric_print_tensor2(ig, "ig");
+
+    for(i=1; i<4; i++)
+        for(j=2; j<4; j++)
+            ig[4*i+j] = ig[4*j+i];
+}
+
+void metric_print_tensor2(double *t, char name[])
+{
+    int i, j;
+    printf("%s\n", name);
+    for(i=0; i<4; i++)
+    {
+        printf("( ");
+        for(j=0; j<4; j++)
+            printf("%.8lf ", t[4*i+j]);
+        printf(")\n");
+    }
 }
 
 void metric_genPosFromSph_cart(double dist, double inc, double az, double *X)

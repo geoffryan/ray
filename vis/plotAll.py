@@ -33,21 +33,21 @@ def intensity_face(X, U, R=30.0):
 
     F = np.zeros(x1.shape)
 
-    #r = x1
-    #theta = x2
-    #phi = x3
-    #x = r*np.sin(theta)*np.cos(phi)
-    #y = r*np.sin(theta)*np.sin(phi)
-    #z = r*np.cos(theta)
-    #offsurface = np.fabs(theta-0.5*np.pi) > 1.0e-6
+    r = x1
+    theta = x2
+    phi = x3
+    x = r*np.sin(theta)*np.cos(phi)
+    y = r*np.sin(theta)*np.sin(phi)
+    z = r*np.cos(theta)
+    offsurface = np.fabs(theta-0.5*np.pi) > 1.0e-6
 
-    x = x1
-    y = x2
-    z = x3
-    r = np.sqrt(x*x + y*y + z*z)
-    theta = np.arccos(z/r)
-    phi = np.arctan2(y, x)
-    offsurface = np.fabs(z) > 1.0e-1
+    #x = x1
+    #y = x2
+    #z = x3
+    #r = np.sqrt(x*x + y*y + z*z)
+    #theta = np.arccos(z/r)
+    #phi = np.arctan2(y, x)
+    #offsurface = np.fabs(z) > 1.0e-1
 
     F[x*x+y*y < R*R] = 1.0
 

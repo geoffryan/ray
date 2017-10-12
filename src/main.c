@@ -54,6 +54,26 @@ int main(int argc, char *argv[])
     metric_g(g, x, args);
     metric_ig(ig, x, g, args);
 
+    int i, j, k, l;
+    for(i=0; i<4; i++)
+    {
+        for(j=0; j<4; j++)
+        {
+            double val = 0.0;
+            for(k=0; k<4; k++)
+                val += g[4*i+k]*ig[4*k+j];
+            printf(" %.8lf", val);
+        }
+        printf("\n");
+    }
+    */
+
+
+    /*
+    double g[16], ig[16], eta[16];
+    metric_g(g, x, args);
+    metric_ig(ig, x, g, args);
+
     int i,j;
     for(i=0; i<16; i++)
         eta[i] = 0;

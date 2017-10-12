@@ -110,6 +110,7 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
             t += dt0;
             i++;
             
+            *status = target(t-dt0, xu, &t, xu1, args);
             if(n >= 0)
             {
                 fprintf(f, "%.12lg", t);
@@ -118,7 +119,6 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
                 fprintf(f, "\n");
             }
 
-            *status = target(t-dt0, xu, &t, xu1, args);
             //printf("        target - status: %.6d\n", status);
 
             if(*status != 0)
@@ -242,8 +242,9 @@ void trace_interpolateToCoordSurface(double *t, double *xu,
     c2 = -3*fa - 2*(tb-ta)*ma + 3*fb - (tb-ta)*mb;
     c3 = 2*fa + (tb-ta)*ma - 2*fb + (tb-ta)*mb;
   
-    /*
+    
     printf("ta: %.14lg\n", ta);
+    /*
     printf("xua: %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg\n",
             xua[0], xua[1], xua[2], xua[3], xua[4], xua[5], xua[6], xua[7]);
     printf("xudota: %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg\n",
@@ -255,7 +256,17 @@ void trace_interpolateToCoordSurface(double *t, double *xu,
     printf("xudotb: %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg\n",
             xudotb[0], xudotb[1], xudotb[2], xudotb[3], xudotb[4], xudotb[5],
             xudotb[6], xudotb[7]);
-    */
+            */
+    printf("xua: %.14lg %.14lg %.14lg %.14lg\n",
+            xua[0], xua[1], xua[2], xua[3]);
+    printf("xudota: %.14lg %.14lg %.14lg %.14lg\n",
+            xudota[0], xudota[1], xudota[2], xudota[3]);
+    printf("tb: %.14lg\n", tb);
+    printf("xub: %.14lg %.14lg %.14lg %.14lg\n",
+            xub[0], xub[1], xub[2], xub[3]);
+    printf("xudotb: %.14lg %.14lg %.14lg %.14lg\n",
+            xudotb[0], xudotb[1], xudotb[2], xudotb[3]);
+    
 
     //Find intersection of interpolant and surface
     double s, ds, f, df;
@@ -284,6 +295,10 @@ void trace_interpolateToCoordSurface(double *t, double *xu,
     }
     *t = (1-s)*ta + s*tb;
 
+    printf("s: %.14lg\n", s);
+    printf("t: %.14lg\n", *t);
+    printf("xu: %.14lg %.14lg %.14lg %.14lg\n",
+            xu[0], xu[1], xu[2], xu[3]);
     /*
     printf("s: %.6lf\n", s);
     printf("xu: %.3lf %.3lf %.3lf %.3lf %.3lf %.3lf %.3lf %.3lf\n",
