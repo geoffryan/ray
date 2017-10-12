@@ -18,24 +18,39 @@ PLATFORM := $(shell uname -s)
 
 DEBUG    = -g -Wall
 OPT      = -O3
-INCLUDES = -I$(H5I)
-CFLAGS   = -c $(INCLUDES)
-LDFLAGS  = -L$(H5L) -lhdf5 -lm
+INC      = -I$(H5I)
+LIB      = -L$(H5L) -lhdf5
+DEF      =
 
 ifeq ($(PLATFORM),Darwin)
-	CFLAGS += -DOSX
-	LDFLAGS += -framework Accelerate
+	DEF += -DOSX
+	LIB += -framework Accelerate
 endif
+ifeq ($(PLATFORM),Linux)
+	DEF += -DLINUX
+ifeq ($(strip $(USE_MKL)), 1)
+	DEF += -DMKL
+	INC += -I$(MKLDIR)/include
+	LIB += -L$(MKLDIR)/lib/em64t -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lmkl_lapack
+else
+	INC += -I$(LPI)
+	LIB += -L$(LPL) -llapack
+endif
+endif
+
+ifeq ($(strip $(USE_OMP)), 1)
+	$(DEF) += -DUSEOMP $(OMP_FLAG)
+	$(LIB) += $(OMP_FLAG)
+endif
+
+CFLAGS   = -c $(DEF) $(INC)
+LDFLAGS  = $(LIB) -lm
 
 ifeq ($(strip $(USE_DEBUG)), 1)
 	CFLAGS += $(DEBUG)
 endif
 ifeq ($(strip $(USE_OPT)), 1)
 	CFLAGS += $(OPT)
-endif
-ifeq ($(strip $(USE_OMP)), 1)
-	CFLAGS += -DUSEOMP $(OMP_FLAG)
-	LDFLAGS += $(OMP_FLAG)
 endif
 
 

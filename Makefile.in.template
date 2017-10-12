@@ -9,9 +9,15 @@ CC       = gcc
 H5I      = /usr/local/include
 H5L      = /usr/local/lib
 
+#Lapack (Linux Only)
+LPI      =
+LPL      =
+USE_MKL  = 0
+MKLDIR   = 
+
 #Compile flags
 USE_OMP   = 0
-OMP_FLAG    = -fopenmp
-USE_DEBUG = 1  # Compile with symbol table and all warnings
-USE_OPT   = 0  # Compile with optimization.
+OMP_FLAG  = -fopenmp
+USE_DEBUG = 0  # Compile with symbol table and all warnings
+USE_OPT   = 1  # Compile with optimization.
 
