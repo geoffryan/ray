@@ -22,8 +22,6 @@ $ brew install hdf5
 
 ## Installation
 
-Currently only works out-of-the-box on Mac. Linux coming soon.
-
 Copy `Makefile.in.template` to `Makefile.in` and modify the variables to suit your system (typically just the `H55` variable which should point to your HDF5 installation).  Then just run `make` and you're good to go!
 
 ```bash
