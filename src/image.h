@@ -3,6 +3,7 @@
 
 #include "camera.h"
 
-void imageEul(struct Camera *cam, double *x, double tMAX, void *args);
+void imageEul(struct Camera *cam, double *x, double tMAX, int nhits, 
+                int ntracks, void *args);
 
 #endif

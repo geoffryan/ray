@@ -9,6 +9,12 @@ MeshType    0       // 0 Rectangular Array
 N1          32
 N2          32
 
+//Number of hits on target surface to record for each ray
+nhits       1
+
+//Number of tracks to record
+ntracks     10
+
 //Observer's Theta (X1) and Phi (X2) range.
 //By default Observer's x-axis is directed towards the origin.
 //Angles are in radians, values here are multiples of PI. (0.5 means 0.5*PI).

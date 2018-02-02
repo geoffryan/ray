@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
     read_pars(&pars, argv[1]);
     print_pars(&pars, NULL);
 
+    output_h5_init("map.h5");
+    output_par_h5(&pars, "map.h5");
+
     int err = 0;
     err += setup_metric(&pars);
     err += setup_camera(&cam, &pars);
@@ -34,81 +37,13 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    FILE *f = fopen("disc_im_grid.txt", "w");
-    fclose(f);
-    print_pars(&pars, "disc_im_grid.txt");
-
-    //double args[1];
-    //args[0] = 1.0;
-    //imageDiscGrid(&grid, args, "disc_im_grid.txt");
-    //
     double x[4] = {0.0, 0.0, 0.0, 0.0};
     metric_genPosFromSph(pars.distance, pars.inclination, pars.azimuth, x);
     double args[4] = {1.0, 1.0, 16, 0.015625};
     double tMAX = 2*pars.distance;
 
-    imageEul(&cam, x, tMAX, args);
+    imageEul(&cam, x, tMAX, pars.nhits, pars.ntracks, args);
 
-    /*
-    double g[16], ig[16], eta[16];
-    metric_g(g, x, args);
-    metric_ig(ig, x, g, args);
-
-    int i, j, k, l;
-    for(i=0; i<4; i++)
-    {
-        for(j=0; j<4; j++)
-        {
-            double val = 0.0;
-            for(k=0; k<4; k++)
-                val += g[4*i+k]*ig[4*k+j];
-            printf(" %.8lf", val);
-        }
-        printf("\n");
-    }
-    */
-
-
-    /*
-    double g[16], ig[16], eta[16];
-    metric_g(g, x, args);
-    metric_ig(ig, x, g, args);
-
-    int i,j;
-    for(i=0; i<16; i++)
-        eta[i] = 0;
-    eta[0] = -1;
-    eta[5] = 1;
-    eta[10] = 1;
-    eta[15] = 1;
-
-    double v[3] = {0.1, 0.1, 0.2};
-    double u[4];
-    u[0] = 1.0/sqrt(-g[0]-2*g[1]*v[0]-2*g[2]*v[1]-2*g[3]*v[2]
-                    -g[5]*v[0]*v[0]-2*g[6]*v[0]*v[1]-2*g[7]*v[0]*v[2]
-                    -g[10]*v[1]*v[1]-2*g[11]*v[1]*v[2]-g[15]*v[2]*v[2]);
-    u[1] = u[0]*v[0];
-    u[2] = u[0]*v[1];
-    u[3] = u[0]*v[2];
-
-    double norm = 0.0;
-    for(i=0; i<4; i++)
-        for(j=0; j<4; j++)
-            norm += g[4*i+j]*u[i]*u[j];
-    printf("u^2: %.6lf\n", norm);
-    
-    double e[16];
-
-    metric_tetrad_euler(e, x, g, args);
-
-    printf("\nTetrad euler\n\n");
-    print_tetrad_check(e, eta, g, ig);
-
-    metric_tetrad(e, x, u, g, args);
-    
-    printf("\n Tetrad U\n\n");
-    print_tetrad_check(e, eta, g, ig);
-    */
 
     free_camera(&cam);
 

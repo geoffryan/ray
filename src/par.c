@@ -60,6 +60,8 @@ void read_pars(struct parList *theParList, char filename[])
     readvar(filename, "MeshType",          VAR_INT, &(theParList->meshType));
     readvar(filename, "N1",          VAR_INT, &(theParList->N1));
     readvar(filename, "N2",          VAR_INT, &(theParList->N2));
+    readvar(filename, "nhits",        VAR_INT, &(theParList->nhits));
+    readvar(filename, "ntracks",        VAR_INT, &(theParList->ntracks));
     readvar(filename, "X1a",          VAR_DBL, &(theParList->X1a));
     readvar(filename, "X1b",          VAR_DBL, &(theParList->X1b));
     readvar(filename, "X2a",          VAR_DBL, &(theParList->X2a));
@@ -85,6 +87,8 @@ void print_pars(struct parList *theParList, char filename[])
     fprintf(f, "MeshType: %d\n", theParList->meshType);
     fprintf(f, "N1: %d\n", theParList->N1);
     fprintf(f, "N2: %d\n", theParList->N2);
+    fprintf(f, "nhits: %d\n", theParList->nhits);
+    fprintf(f, "ntracks: %d\n", theParList->ntracks);
     fprintf(f, "X1a: %g\n", theParList->X1a);
     fprintf(f, "X1b: %g\n", theParList->X1b);
     fprintf(f, "X2a: %g\n", theParList->X2a);

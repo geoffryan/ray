@@ -9,6 +9,8 @@ struct parList
     int meshType;
     int N1;
     int N2;
+    int nhits;
+    int ntracks;
     double X1a;
     double X1b;
     double X2a;
@@ -26,6 +28,8 @@ const static struct parList PAR_DEFAULT = {
     .meshType = 0,
     .N1 = 1,
     .N2 = 1,
+    .nhits = 1,
+    .ntracks = 100,
     .X1a = 0.0,
     .X1b = 0.0,
     .X2a = 0.0,

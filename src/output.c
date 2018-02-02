@@ -25,15 +25,59 @@ void output_print_step(double t, double *x, int n, char *filename)
     fclose(f);
 }
 
+void output_h5_init(char *filename)
+{
+    createFile(filename);
+    createGroup(filename, "Map");
+    createGroup(filename, "Tracks");
+    createGroup(filename, "Pars");
+}
+
+void output_par_h5(struct parList *pars, char *filename)
+{
+    hsize_t fdims1[1] = {1};
+    
+    createDataset(filename, "Pars", "Metric", 1, fdims1, H5T_NATIVE_INT);
+    writeSimple(filename, "Pars", "Metric", &(pars->metric), H5T_NATIVE_INT);
+    
+    createDataset(filename, "Pars", "MeshType", 1, fdims1, H5T_NATIVE_INT);
+    writeSimple(filename, "Pars", "MeshType", &(pars->meshType),
+                                                            H5T_NATIVE_INT);
+    createDataset(filename, "Pars", "N1", 1, fdims1, H5T_NATIVE_INT);
+    writeSimple(filename, "Pars", "N1", &(pars->N1), H5T_NATIVE_INT); 
+    createDataset(filename, "Pars", "N2", 1, fdims1, H5T_NATIVE_INT);
+    writeSimple(filename, "Pars", "N2", &(pars->N2), H5T_NATIVE_INT);
+    
+    createDataset(filename, "Pars", "X1a", 1, fdims1, H5T_NATIVE_DOUBLE);
+    writeSimple(filename, "Pars", "X1a", &(pars->X1a), H5T_NATIVE_DOUBLE); 
+    createDataset(filename, "Pars", "X1b", 1, fdims1, H5T_NATIVE_DOUBLE);
+    writeSimple(filename, "Pars", "X1b", &(pars->X1b), H5T_NATIVE_DOUBLE); 
+    createDataset(filename, "Pars", "X2a", 1, fdims1, H5T_NATIVE_DOUBLE);
+    writeSimple(filename, "Pars", "X2a", &(pars->X2a), H5T_NATIVE_DOUBLE); 
+    createDataset(filename, "Pars", "X2b", 1, fdims1, H5T_NATIVE_DOUBLE);
+    writeSimple(filename, "Pars", "X2b", &(pars->X2b), H5T_NATIVE_DOUBLE); 
+
+    createDataset(filename, "Pars", "nhits", 1, fdims1, H5T_NATIVE_INT);
+    writeSimple(filename, "Pars", "nhits", &(pars->nhits), H5T_NATIVE_INT); 
+
+    createDataset(filename, "Pars", "distance", 1, fdims1, H5T_NATIVE_DOUBLE);
+    writeSimple(filename, "Pars", "distance", &(pars->distance), 
+                                                        H5T_NATIVE_DOUBLE); 
+    createDataset(filename, "Pars", "inclination", 1, fdims1,
+                                                        H5T_NATIVE_DOUBLE);
+    writeSimple(filename, "Pars", "inclination", &(pars->inclination), 
+                                                        H5T_NATIVE_DOUBLE); 
+    createDataset(filename, "Pars", "azimuth", 1, fdims1, H5T_NATIVE_DOUBLE);
+    writeSimple(filename, "Pars", "azimuth", &(pars->azimuth), 
+                                                        H5T_NATIVE_DOUBLE); 
+}
+
 void output_map_h5(double *map, int Nrays, char *filename)
 {
     hsize_t fdims2[2];
     hsize_t mapdims[2] = {Nrays, 20};
     hsize_t map_start[2];
     hsize_t f_start[2] = {0,0};
-
-    createFile(filename);
-    createGroup(filename, "Map");
 
     map_start[0] = 0;
 
@@ -66,6 +110,38 @@ void output_map_h5(double *map, int Nrays, char *filename)
     map_start[1] = 16;
     writePatch(filename, "Map", "u1", map, H5T_NATIVE_DOUBLE, 2,
                 map_start, f_start, fdims2, mapdims, fdims2);
+}
+
+void output_track_h5(struct varr *track, int id, char *filename)
+{
+    char gname[128];
+    sprintf(gname, "Tracks/track_%06d", id);
+
+    int nstep = track->n / 9;
+    hsize_t fdims1[1] = {nstep};
+    hsize_t fdims2[2] = {nstep,4};
+
+    createGroup(filename, gname);
+    createDataset(filename, gname, "t", 1, fdims1, H5T_NATIVE_DOUBLE);
+    createDataset(filename, gname, "x", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, gname, "u", 2, fdims2, H5T_NATIVE_DOUBLE);
+   
+    hsize_t fstart2[2] = {0,0};
+    hsize_t track_start2[2] = {0,0};
+    hsize_t track_dims2[2] = {nstep,9};
+
+    fdims2[1] = 1;
+    track_start2[1] = 0;
+    writePatch(filename, gname, "t", track->arr, H5T_NATIVE_DOUBLE, 2,
+                track_start2, fstart2, fdims2, track_dims2, fdims2);
+
+    fdims2[1] = 4;
+    track_start2[1] = 1;
+    writePatch(filename, gname, "x", track->arr, H5T_NATIVE_DOUBLE, 2,
+                track_start2, fstart2, fdims2, track_dims2, fdims2);
+    track_start2[1] = 5;
+    writePatch(filename, gname, "u", track->arr, H5T_NATIVE_DOUBLE, 2,
+                track_start2, fstart2, fdims2, track_dims2, fdims2);
 }
 
 void createFile(char *fname)

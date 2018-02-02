@@ -6,7 +6,7 @@
 #include "output.h"
 #include "trace.h"
 
-void trace(struct Camera *cam, double tMAX, int track_thin,
+void trace(struct Camera *cam, double tMAX, int nhits, int ntracks,
             int (*target)(double, double *, double *, double *, void *),
             void *args)
 {
@@ -15,8 +15,11 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
     FILE *f;
 
     int N = cam->N;
+    int track_thin = N / ntracks;
 
     double *map = (double *) malloc(20*N*sizeof(double));
+    struct varr track = VARR_DEFAULT;
+    varr_init(&track, 1800);
 
     metric_g(g, cam->X, args);
 
@@ -44,9 +47,9 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
         int status, iter, id;
         id = n % track_thin == 0 ? n : -1;
         t0 = 0.0;
-       
-        trace_single(&status, &iter, &t1, xu1, t0, xu0, tMAX, id, target, 
-                        args);
+
+        trace_single(&status, &iter, &t1, xu1, t0, xu0, tMAX, id, &track,
+                        target, args);
 
         printf("    %d iterations - t: %.6lf\n", iter, t1);
 
@@ -58,15 +61,22 @@ void trace(struct Camera *cam, double tMAX, int track_thin,
             map[20*n+i+4] = xu0[i];
         for(i=0; i<8; i++)
             map[20*n+i+12] = xu1[i];
+
+        if(id >= 0)
+            output_track_h5(&track, id, "map.h5");
+        
+        varr_clear(&track);
     }
 
     output_map_h5(map, N, "map.h5");
 
     free(map);
+    printf("Track varr had size %d (%d steps)\n", track.size, track.size/9);
+    varr_free(&track);
 }
 
 void trace_single(int *status, int *iter, double *t1, double *xu1, 
-                double t0, double *xu0, double tMAX, int n,
+                double t0, double *xu0, double tMAX, int n, struct varr *track,
                 int (*target)(double, double *, double *, double *, void *),
                 void *args)
 {
@@ -87,14 +97,9 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
 
         if(n >= 0)
         {
-            char fname[256];
-            sprintf(fname, "track_%04d.txt", n);
-
-            f = fopen(fname, "w");
-            fprintf(f, "%.12lg", t);
-            for(mu=0; mu<8; mu++)
-                fprintf(f, " %.12lg", xu0[mu]);
-            fprintf(f, "\n");
+            varr_clear(track);
+            varr_append(track, t);
+            varr_append_chunk(track, xu0, 8);
         }
 
         int i = 0;
@@ -113,10 +118,8 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
             *status = target(t-dt0, xu, &t, xu1, args);
             if(n >= 0)
             {
-                fprintf(f, "%.12lg", t);
-                for(mu=0; mu<8; mu++)
-                    fprintf(f, " %.12lg", xu1[mu]);
-                fprintf(f, "\n");
+                varr_append(track, t);
+                varr_append_chunk(track, xu1, 8);
             }
 
             //printf("        target - status: %.6d\n", status);
@@ -124,9 +127,6 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
             if(*status != 0)
                 break;
         }
-
-        if(n >= 0)
-            fclose(f);
 
         *t1 = t;
         *iter = i;

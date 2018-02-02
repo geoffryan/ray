@@ -2,13 +2,15 @@
 #define RAY_TRACE
 
 #include "camera.h"
+#include "varr.h"
 
-void trace(struct Camera *cam, double tMAX, int track_thin,
+
+void trace(struct Camera *cam, double tMAX, int nhits, int ntracks,
             int (*target)(double, double *, double *, double *, void *),
             void *args);
 
 void trace_single(int *status, int *iter, double *t1, double *xu1, 
-                double t0, double *xu0, double tMAX, int n,
+                double t0, double *xu0, double tMAX, int n, struct varr *track,
                 int (*target)(double, double *, double *, double *, void *),
                 void *args);
 void trace_xudot(double t, double *xu, void *args, double *xudot);
