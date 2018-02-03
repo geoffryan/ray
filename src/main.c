@@ -5,6 +5,7 @@
 #include "ode.h"
 #include "metric.h"
 #include "image.h"
+#include "surface.h"
     
 void print_tetrad_check(double *e, double *eta, double *g, double *ig);
 
@@ -27,6 +28,7 @@ int main(int argc, char *argv[])
 
     int err = 0;
     err += setup_metric(&pars);
+    err += setup_surface(&pars);
     err += setup_camera(&cam, &pars);
 
     if(err != 0)

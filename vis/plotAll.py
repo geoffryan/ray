@@ -83,11 +83,12 @@ def plotMap(ax, mapFilename):
 
     f = h5.File(mapFilename, "r")
     skyLoc = f["Map/thC"][...]
-    t = f["Map/t"][...]
+    t0 = f["Map/t0"][...]
     X0 = f["Map/x0"][...]
     U0 = f["Map/u0"][...]
-    X1 = f["Map/x1"][...]
-    U1 = f["Map/u1"][...]
+    t1 = f["Map/t"][:,0]
+    X1 = f["Map/x"][:,0,:]
+    U1 = f["Map/u"][:,0,:]
     f.close()
 
     thC = skyLoc[:,0]
@@ -143,13 +144,21 @@ def plotMapNice(mapFilename):
     fig.savefig('map.png')
     plt.close(fig)
 
-def plotAll(mapFilename, trackFilenames):
+def plotAll(mapFilename):
 
     fig, ax = plt.subplots(2,2, figsize=(12,9))
 
-    for trackFilename in trackFilenames:
-        t, x0, x1, x2, x3 = np.loadtxt(trackFilename, usecols=[0,1,2,3,4],
-                                        unpack=True)
+    f = h5.File(mapFilename)
+
+    for trackName in f['Tracks']:
+        t = f['Tracks'][trackName]['t'][...]
+        x = f['Tracks'][trackName]['x'][...]
+        x0 = x[:,0]
+        x1 = x[:,1]
+        x2 = x[:,2]
+        x3 = x[:,3]
+        #t, x0, x1, x2, x3 = np.loadtxt(trackFilename, usecols=[0,1,2,3,4],
+        #                                unpack=True)
 
         ax[0,0].plot(x1, x2, 'k', alpha=0.3)
         ax[0,1].plot(x3, x2, 'k', alpha=0.3)
@@ -160,6 +169,8 @@ def plotAll(mapFilename, trackFilenames):
         #ax[0,0].plot(x, y, 'k', alpha=0.3)
         #ax[0,1].plot(z, y, 'k', alpha=0.3)
         #ax[1,0].plot(x, z, 'k', alpha=0.3)
+
+    f.close()
 
     ax[0,0].set_xlabel(r'$x^1$')
     ax[0,0].set_ylabel(r'$x^2$')
@@ -177,7 +188,7 @@ def plotAll(mapFilename, trackFilenames):
 if __name__ == "__main__":
 
     if(len(sys.argv) < 2):
-        print("Need a map and tracks")
+        print("Need a map file")
 
-    plotAll(sys.argv[1], sys.argv[2:])
+    plotAll(sys.argv[1])
     #plotMapNice(sys.argv[1])

@@ -12,8 +12,5 @@ void imageEul(struct Camera *cam, double *x, double tMAX, int nhits,
 
     camera_set_position(cam, x, u, args);
 
-    if(metric_orientation() == SPH)
-        trace(cam, tMAX, nhits, ntracks, &target_eq_sph, args);
-    else
-        trace(cam, tMAX, nhits, ntracks, &target_eq_cart, args);
+    trace(cam, tMAX, nhits, ntracks, args);
 }

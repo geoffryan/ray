@@ -39,6 +39,8 @@ void output_par_h5(struct parList *pars, char *filename)
     
     createDataset(filename, "Pars", "Metric", 1, fdims1, H5T_NATIVE_INT);
     writeSimple(filename, "Pars", "Metric", &(pars->metric), H5T_NATIVE_INT);
+    createDataset(filename, "Pars", "Surface", 1, fdims1, H5T_NATIVE_INT);
+    writeSimple(filename, "Pars", "Surface", &(pars->surface), H5T_NATIVE_INT);
     
     createDataset(filename, "Pars", "MeshType", 1, fdims1, H5T_NATIVE_INT);
     writeSimple(filename, "Pars", "MeshType", &(pars->meshType),
@@ -72,10 +74,11 @@ void output_par_h5(struct parList *pars, char *filename)
                                                         H5T_NATIVE_DOUBLE); 
 }
 
-void output_map_h5(double *map, int Nrays, char *filename)
+void output_map_h5(double *map, int *nhits, int Nrays, int buf_width,
+                    char *filename)
 {
     hsize_t fdims2[2];
-    hsize_t mapdims[2] = {Nrays, 20};
+    hsize_t mapdims[2] = {Nrays, buf_width};
     hsize_t map_start[2];
     hsize_t f_start[2] = {0,0};
 
@@ -83,33 +86,66 @@ void output_map_h5(double *map, int Nrays, char *filename)
 
     fdims2[0] = Nrays;
     fdims2[1] = 2;
-    createDataset(filename, "Map", "t", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "t0", 1, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "nhits", 1, fdims2, H5T_NATIVE_INT);
     createDataset(filename, "Map", "thC", 2, fdims2, H5T_NATIVE_DOUBLE);
     map_start[1] = 0;
     writePatch(filename, "Map", "thC", map, H5T_NATIVE_DOUBLE, 2, 
                 map_start, f_start, fdims2, mapdims, fdims2);
+    fdims2[0] = Nrays;
+    fdims2[1] = 1;
     map_start[1] = 2;
-    writePatch(filename, "Map", "t", map, H5T_NATIVE_DOUBLE, 2, 
+    writePatch(filename, "Map", "t0", map, H5T_NATIVE_DOUBLE, 2, 
                 map_start, f_start, fdims2, mapdims, fdims2);
+    fdims2[0] = Nrays;
+    f_start[0] = 0;
+    writePatch(filename, "Map", "nhits", nhits, H5T_NATIVE_INT, 1, 
+                f_start, f_start, fdims2, fdims2, fdims2);
     
     fdims2[0] = Nrays;
     fdims2[1] = 4;
     createDataset(filename, "Map", "x0", 2, fdims2, H5T_NATIVE_DOUBLE);
     createDataset(filename, "Map", "u0", 2, fdims2, H5T_NATIVE_DOUBLE);
-    createDataset(filename, "Map", "x1", 2, fdims2, H5T_NATIVE_DOUBLE);
-    createDataset(filename, "Map", "u1", 2, fdims2, H5T_NATIVE_DOUBLE);
-    map_start[1] = 4;
+    map_start[1] = 3;
     writePatch(filename, "Map", "x0", map, H5T_NATIVE_DOUBLE, 2,
                 map_start, f_start, fdims2, mapdims, fdims2);
-    map_start[1] = 8;
+    map_start[1] = 7;
     writePatch(filename, "Map", "u0", map, H5T_NATIVE_DOUBLE, 2,
                 map_start, f_start, fdims2, mapdims, fdims2);
-    map_start[1] = 12;
-    writePatch(filename, "Map", "x1", map, H5T_NATIVE_DOUBLE, 2,
-                map_start, f_start, fdims2, mapdims, fdims2);
-    map_start[1] = 16;
-    writePatch(filename, "Map", "u1", map, H5T_NATIVE_DOUBLE, 2,
-                map_start, f_start, fdims2, mapdims, fdims2);
+
+    int maxhits = (buf_width-2)/9-1;
+    hsize_t fread2[2] = {Nrays, 1};
+    hsize_t fdims3[3] = {Nrays, maxhits, 4};
+    hsize_t fread3[3] = {Nrays, 1, 4};
+    hsize_t f_start3[3] = {0, 0, 0};
+    hsize_t map_start3[3] = {0, 0, 0};
+    hsize_t map_dims3[3] = {Nrays, 1, buf_width};
+
+    fdims2[0] = Nrays;
+    fdims2[1] = maxhits;
+    createDataset(filename, "Map", "t", 2, fdims2, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "x", 3, fdims3, H5T_NATIVE_DOUBLE);
+    createDataset(filename, "Map", "u", 3, fdims3, H5T_NATIVE_DOUBLE);
+
+    int i;
+    for(i=0; i < maxhits; i++)
+    {
+        f_start[0] = 0;
+        f_start[1] = i;
+        map_start[0] = 0;
+        map_start[1] = 11 + 9*i;
+        writePatch(filename, "Map", "t", map, H5T_NATIVE_DOUBLE, 2,
+                    map_start, f_start, fread2, mapdims, fdims2);
+
+        f_start3[1] = i;
+        map_start3[2] = 12 + 9*i;
+        writePatch(filename, "Map", "x", map, H5T_NATIVE_DOUBLE, 3,
+                    map_start3, f_start3, fread3, map_dims3, fdims3);
+
+        map_start3[2] = 16 + 9*i;
+        writePatch(filename, "Map", "u", map, H5T_NATIVE_DOUBLE, 3,
+                    map_start3, f_start3, fread3, map_dims3, fdims3);
+    }
 }
 
 void output_track_h5(struct varr *track, int id, char *filename)

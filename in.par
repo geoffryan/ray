@@ -2,6 +2,7 @@ Metric      3       // 0 Flat-Cartesian, 1 Flat-Spherical, 2 Schwarzschild,
                     // 3 Schwarzschild-KerrSchildSpherical,
                     // 4 Schwarzschild-KerrSchildCartesian,
                     // 5 Binary-KerrSchildCartesian
+Surface     1       // 0 Equator, 1 Sky
 
 MeshType    0       // 0 Rectangular Array
 
@@ -10,7 +11,7 @@ N1          32
 N2          32
 
 //Number of hits on target surface to record for each ray
-nhits       1
+nhits       2
 
 //Number of tracks to record
 ntracks     10

@@ -6,6 +6,7 @@ enum{VAR_DBL, VAR_INT, VAR_LON, VAR_STR};
 struct parList
 {
     int metric;
+    int surface;
     int meshType;
     int N1;
     int N2;
@@ -25,6 +26,7 @@ struct parList
 
 const static struct parList PAR_DEFAULT = {
     .metric = 0,
+    .surface = 0,
     .meshType = 0,
     .N1 = 1,
     .N2 = 1,

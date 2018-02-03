@@ -10,7 +10,10 @@ struct varr
     double *arr;
 };
 
-const static struct varr VARR_DEFAULT = {0, 0, NULL};
+const static struct varr VARR_DEFAULT = {
+    .n = 0,
+    .size = 0,
+    .arr = NULL};
 
 void varr_init(struct varr *v, int size);
 void varr_clear(struct varr *v);

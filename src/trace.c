@@ -4,10 +4,10 @@
 #include "metric.h"
 #include "ode.h"
 #include "output.h"
+#include "surface.h"
 #include "trace.h"
 
-void trace(struct Camera *cam, double tMAX, int nhits, int ntracks,
-            int (*target)(double, double *, double *, double *, void *),
+void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
             void *args)
 {
     int mu, nu, i, n;
@@ -17,7 +17,11 @@ void trace(struct Camera *cam, double tMAX, int nhits, int ntracks,
     int N = cam->N;
     int track_thin = N / ntracks;
 
-    double *map = (double *) malloc(20*N*sizeof(double));
+    maxhits = maxhits > 1 ? maxhits : 1;
+    int buf_width = 2 + 9*(maxhits + 1);
+
+    double *map = (double *) malloc(buf_width*N*sizeof(double));
+    int *nhits = (int *) malloc(N*sizeof(int));
     struct varr track = VARR_DEFAULT;
     varr_init(&track, 1800);
 
@@ -43,24 +47,28 @@ void trace(struct Camera *cam, double tMAX, int nhits, int ntracks,
         printf("   u: %.6lf %.6lf %.6lf %.6lf\n",
                     xu0[4], xu0[5], xu0[6], xu0[7]);
 
-        double t0, t1, xu1[8];
+        double t0, tHits[maxhits], xuHits[8*maxhits];
         int status, iter, id;
         id = n % track_thin == 0 ? n : -1;
         t0 = 0.0;
 
-        trace_single(&status, &iter, &t1, xu1, t0, xu0, tMAX, id, &track,
-                        target, args);
+        status = trace_single(&iter, &(nhits[n]), tHits, xuHits, t0, xu0, tMAX,
+                                maxhits, id, &track, args);
 
-        printf("    %d iterations - t: %.6lf\n", iter, t1);
+        printf("    %d iterations - t: %.6lf\n", iter, tHits[nhits[n]-1]);
 
-        map[20*n + 0] = cam->thC[2*n];
-        map[20*n + 1] = cam->thC[2*n+1];
-        map[20*n + 2] = t0;
-        map[20*n + 3] = t1;
+        map[buf_width * n + 0] = cam->thC[2*n];
+        map[buf_width * n + 1] = cam->thC[2*n+1];
+        map[buf_width * n + 2] = t0;
         for(i=0; i<8; i++)
-            map[20*n+i+4] = xu0[i];
-        for(i=0; i<8; i++)
-            map[20*n+i+12] = xu1[i];
+            map[buf_width*n+i+3] = xu0[i];
+        int j;
+        for(j=0; j<maxhits; j++)
+        {
+            map[buf_width * n + 9*j + 11] = tHits[j];
+            for(i=0; i<8; i++)
+                map[buf_width*n + 9*j + i + 12] = xuHits[8*j+i];
+        }
 
         if(id >= 0)
             output_track_h5(&track, id, "map.h5");
@@ -68,19 +76,20 @@ void trace(struct Camera *cam, double tMAX, int nhits, int ntracks,
         varr_clear(&track);
     }
 
-    output_map_h5(map, N, "map.h5");
+    output_map_h5(map, nhits, N, buf_width, "map.h5");
 
     free(map);
     printf("Track varr had size %d (%d steps)\n", track.size, track.size/9);
     varr_free(&track);
 }
 
-void trace_single(int *status, int *iter, double *t1, double *xu1, 
-                double t0, double *xu0, double tMAX, int n, struct varr *track,
-                int (*target)(double, double *, double *, double *, void *),
+int trace_single(int *iter, int *nhits, double *tHits, double *xuHits, 
+                double t0, double *xu0, double tMAX, int maxhits, 
+                int id, struct varr *track,
                 void *args)
 {
         double xu[8];
+        double xu1[8];
         int mu;
 
         for(mu=0; mu<8; mu++)
@@ -93,9 +102,9 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
         double dt = -1.0e-6;
         double dt0;
 
-        FILE *f;
+        int hit_status;
 
-        if(n >= 0)
+        if(id >= 0)
         {
             varr_clear(track);
             varr_append(track, t);
@@ -103,6 +112,7 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
         }
 
         int i = 0;
+        int ihit = 0;
         while(fabs(t) < fabs(tMAX))
         {
             //printf("      %d: %.6lf\n", i, t);
@@ -115,8 +125,12 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
             t += dt0;
             i++;
             
-            *status = target(t-dt0, xu, &t, xu1, args);
-            if(n >= 0)
+            hit_status = trace_target(t-dt0, xu, t, xu1, &(tHits[ihit]),
+                                        &(xuHits[8*ihit]), args);
+            if(hit_status != 0)
+                ihit++;
+
+            if(id >= 0)
             {
                 varr_append(track, t);
                 varr_append_chunk(track, xu1, 8);
@@ -124,12 +138,22 @@ void trace_single(int *status, int *iter, double *t1, double *xu1,
 
             //printf("        target - status: %.6d\n", status);
 
-            if(*status != 0)
+            if(hit_status < 0 || ihit == maxhits)
                 break;
         }
 
-        *t1 = t;
+        if(fabs(t) > fabs(tMAX) && ihit < maxhits)
+        {
+            tHits[ihit] = t;
+            for(mu=0; mu<8; mu++)
+                xuHits[8*ihit+mu] = xu1[mu];
+            ihit++;
+        }
+
         *iter = i;
+        *nhits = ihit;
+
+        return hit_status;
 }
 
 void trace_xudot(double t, double *xu, void *args, double *xudot)
@@ -164,64 +188,38 @@ void trace_xudot(double t, double *xu, void *args, double *xudot)
     }
 }
 
-int target_eq_cart(double ta, double *xua, double *tb, double *xub, void *args)
+
+int trace_target(double ta, double *xua, double tb, double *xub, 
+                    double *t, double *xu, void *args)
 {
     int status = 0;
 
     if(metric_shadow(xub, args))
+    {
         status = -1;
+        *t = tb;
+        int mu;
+        for(mu=0; mu<8; mu++)
+            xu[mu] = xub[mu];
+    }
     else
     {
-        double za = xua[3];
-        double zb = xub[3];
+        double fa = surface_f(ta, xua, args);
+        double fb = surface_f(tb, xub, args);
 
-        if(zb*za < 0)
+        if(fb*fa < 0)
         {
             status = 1;
             
-            double t, xu[8];
-            trace_interpolateToCoordSurface(&t, xu, ta, xua, *tb, xub,
-                                    3, 0.0, args);
-            *tb = t;
-            int mu;
-            for(mu=0; mu<8; mu++)
-                xub[mu] = xu[mu];
+            trace_interpolateToSurface(t, xu, ta, xua, tb, xub, args);
         }
     }
 
     return status;
 }
 
-int target_eq_sph(double ta, double *xua, double *tb, double *xub, void *args)
-{
-    int status = 0;
-
-    if(metric_shadow(xub, args))
-        status = -1;
-    else
-    {
-        double tha = xua[2];
-        double thb = xub[2];
-
-        if((tha-0.5*M_PI)*(thb-0.5*M_PI) < 0)
-        {
-            status = 1;
-            double t, xu[8];
-            trace_interpolateToCoordSurface(&t, xu, ta, xua, *tb, xub,
-                                    2, 0.5*M_PI, args);
-            *tb = t;
-            int mu;
-            for(mu=0; mu<8; mu++)
-                xub[mu] = xu[mu];
-        }
-    }
-
-    return status;
-}
-
-void trace_interpolateToCoordSurface(double *t, double *xu, 
-                            double ta, double *xua, double tb, double *xub, 
-                            int d, double C, void *args)
+void trace_interpolateToSurface(double *t, double *xu, double ta, double *xua,
+                                double tb, double *xub, void *args)
 {
     double atol = 1.0e-8;
     double rtol = 1.0e-8;
@@ -231,10 +229,10 @@ void trace_interpolateToCoordSurface(double *t, double *xu,
     trace_xudot(tb, xub, args, xudotb);
 
     // Calculate interpolating polynomial for target variable
-    double fa = xua[d];
-    double fb = xub[d];
-    double ma = xudota[d];
-    double mb = xudotb[d];
+    double fa = surface_f(ta, xua, args);
+    double fb = surface_f(tb, xub, args);
+    double ma = surface_df(ta, xua, xudota, args);
+    double mb = surface_df(tb, xub, xudotb, args);
 
     double c0, c1, c2, c3;
     c0 = fa;
@@ -273,13 +271,13 @@ void trace_interpolateToCoordSurface(double *t, double *xu,
     s = 0.5;
     do
     {
-        f = c0 + s*(c1 + s*(c2 + s*c3)) - C;
+        f = c0 + s*(c1 + s*(c2 + s*c3));
         df = c1 + 2*s*c2 + 3*s*s*c3;
         ds = -f/df;
         //printf("   %.3lf %.3lf %.3lf\n", s, f, df);
         s += ds;
     }
-    while(fabs(ds) > atol && fabs(f-C) > atol + fabs(C)*rtol);
+    while(fabs(ds) > atol && fabs(f) > atol);
 
     //Calculate all variables at surface location
     double h00 = (1+2*s)*(1-s)*(1-s);
