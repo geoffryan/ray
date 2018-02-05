@@ -8,14 +8,18 @@
 #include "trace.h"
 
 void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
-            void *args)
+            void *args, char *filename)
 {
     int mu, nu, i, n;
     double g[16];
     FILE *f;
 
     int N = cam->N;
-    int track_thin = N / ntracks;
+    srand(27181);
+    rand();
+    int tids[ntracks];
+    for(n=0; n<ntracks; n++)
+        tids[n] = rand() % N;
 
     maxhits = maxhits > 1 ? maxhits : 1;
     int buf_width = 2 + 9*(maxhits + 1);
@@ -49,7 +53,10 @@ void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
 
         double t0, tHits[maxhits], xuHits[8*maxhits];
         int status, iter, id;
-        id = n % track_thin == 0 ? n : -1;
+        id = -1;
+        for(i=0; i<ntracks; i++)
+            if(tids[i] == n)
+                id = n;
         t0 = 0.0;
 
         status = trace_single(&iter, &(nhits[n]), tHits, xuHits, t0, xu0, tMAX,
@@ -71,12 +78,12 @@ void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
         }
 
         if(id >= 0)
-            output_track_h5(&track, id, "map.h5");
+            output_track_h5(&track, id, filename);
         
         varr_clear(&track);
     }
 
-    output_map_h5(map, nhits, N, buf_width, "map.h5");
+    output_map_h5(map, nhits, N, buf_width, filename);
 
     free(map);
     printf("Track varr had size %d (%d steps)\n", track.size, track.size/9);
@@ -242,19 +249,6 @@ void trace_interpolateToSurface(double *t, double *xu, double ta, double *xua,
   
     
     printf("ta: %.14lg\n", ta);
-    /*
-    printf("xua: %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg\n",
-            xua[0], xua[1], xua[2], xua[3], xua[4], xua[5], xua[6], xua[7]);
-    printf("xudota: %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg\n",
-            xudota[0], xudota[1], xudota[2], xudota[3], xudota[4], xudota[5],
-            xudota[6], xudota[7]);
-    printf("tb: %.14lg\n", tb);
-    printf("xub: %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg\n",
-            xub[0], xub[1], xub[2], xub[3], xub[4], xub[5], xub[6], xub[7]);
-    printf("xudotb: %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg %.14lg\n",
-            xudotb[0], xudotb[1], xudotb[2], xudotb[3], xudotb[4], xudotb[5],
-            xudotb[6], xudotb[7]);
-            */
     printf("xua: %.14lg %.14lg %.14lg %.14lg\n",
             xua[0], xua[1], xua[2], xua[3]);
     printf("xudota: %.14lg %.14lg %.14lg %.14lg\n",
@@ -297,9 +291,4 @@ void trace_interpolateToSurface(double *t, double *xu, double ta, double *xua,
     printf("t: %.14lg\n", *t);
     printf("xu: %.14lg %.14lg %.14lg %.14lg\n",
             xu[0], xu[1], xu[2], xu[3]);
-    /*
-    printf("s: %.6lf\n", s);
-    printf("xu: %.3lf %.3lf %.3lf %.3lf %.3lf %.3lf %.3lf %.3lf\n",
-            xu[0], xu[1], xu[2], xu[3], xu[4], xu[5], xu[6], xu[7]);
-    */
 }

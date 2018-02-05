@@ -6,11 +6,11 @@ int readvar(char filename[], char key[], int vtype, void *ptr)
 {
     FILE *f = fopen(filename, "r");
 
-    char line[256];
-    char word[256];
+    char line[MAXSTRLEN];
+    char word[MAXSTRLEN];
     int found = 0;
 
-    while(fgets(line,256,f) != NULL)
+    while(fgets(line,MAXSTRLEN,f) != NULL)
     {
         sscanf(line, "%s ", word);
         if(strcmp(word,key) == 0)
@@ -26,7 +26,8 @@ int readvar(char filename[], char key[], int vtype, void *ptr)
         return 1;
     }
 
-    char *sval = line + strlen(key) + strspn(line+strlen(key)," \t:=");
+    int whitespace_length = strspn(line+strlen(key)," \t:=");
+    char *sval = line + strlen(key) + whitespace_length;
 
     if(vtype == VAR_DBL)
     {
@@ -48,7 +49,30 @@ int readvar(char filename[], char key[], int vtype, void *ptr)
     }
     else
     {
-        strcpy((char *) ptr, sval);
+        int entry_length = strcspn(sval, "\t:=#\n");
+        char entry[MAXSTRLEN];
+        strncpy(entry, sval, entry_length);
+        entry[entry_length] = '\0';
+
+        char *comment = strstr(entry, "//");
+        if(comment != NULL)
+            *comment = '\0';
+        entry_length = strlen(entry);
+
+        comment = strstr(entry, "/*");
+        if(comment != NULL)
+            *comment = '\0';
+        entry_length = strlen(entry);
+
+        //Trim trailing whitespace
+        char *end = entry + entry_length - 1;
+        while(end > entry && isspace(*end))
+            end--;
+        *(end+1) = '\0';
+        entry_length = strlen(entry);
+
+        strncpy((char *) ptr, entry, entry_length);
+        ((char *)ptr)[entry_length] = '\0';
     }
 
     return 0;
@@ -56,6 +80,7 @@ int readvar(char filename[], char key[], int vtype, void *ptr)
 
 void read_pars(struct parList *theParList, char filename[])
 {
+    readvar(filename, "Filename",       VAR_STR, &(theParList->filename));
     readvar(filename, "Metric",          VAR_INT, &(theParList->metric));
     readvar(filename, "Surface",          VAR_INT, &(theParList->surface));
     readvar(filename, "MeshType",          VAR_INT, &(theParList->meshType));
@@ -84,6 +109,7 @@ void print_pars(struct parList *theParList, char filename[])
         f = fopen(filename, "a");
 
     fprintf(f, "### Input Parameters ###\n");
+    fprintf(f, "Filename: %s\n", theParList->filename);
     fprintf(f, "Metric: %d\n", theParList->metric);
     fprintf(f, "Surface: %d\n", theParList->surface);
     fprintf(f, "MeshType: %d\n", theParList->meshType);

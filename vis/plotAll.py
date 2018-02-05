@@ -3,51 +3,21 @@ import math
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import h5py as h5
+import rayUtil as ru
 
-def kep_u(r, M, a):
-    return 0
-
-def intensity_disk_T(X, U, T=1.0, M=1.0):
+def intensity_face(X, U, pars, R=30.0):
 
     x0 = X[:,0]
     x1 = X[:,1]
     x2 = X[:,2]
     x3 = X[:,3]
 
-    F = np.zeros(x1.shape)
-    r = x1
-    phi = x3
+    x, y, z = ru.getCartesianCoords(X, pars)
+    r, theta, phi = ru.getSphericalCoords(X, pars)
 
-    surface = np.fabs(x2-0.5*np.pi) < 0.1
+    F = np.zeros(x.shape)
 
-    F[surface] = 1.0 + 0.5*np.cos(x3[surface])
-    return F
-
-def intensity_face(X, U, R=30.0):
-
-    x0 = X[:,0]
-    x1 = X[:,1]
-    x2 = X[:,2]
-    x3 = X[:,3]
-
-    F = np.zeros(x1.shape)
-
-    r = x1
-    theta = x2
-    phi = x3
-    x = r*np.sin(theta)*np.cos(phi)
-    y = r*np.sin(theta)*np.sin(phi)
-    z = r*np.cos(theta)
-    offsurface = np.fabs(theta-0.5*np.pi) > 1.0e-6
-
-    #x = x1
-    #y = x2
-    #z = x3
-    #r = np.sqrt(x*x + y*y + z*z)
-    #theta = np.arccos(z/r)
-    #phi = np.arctan2(y, x)
-    #offsurface = np.fabs(z) > 1.0e-1
+    offsurface = np.fabs(z) > 1.0e-1
 
     F[x*x+y*y < R*R] = 1.0
 
@@ -65,112 +35,51 @@ def intensity_face(X, U, R=30.0):
     return F
 
 
-def intensity(X, U):
+def intensity(X, U, pars):
 
     F = np.zeros(X.shape[0])
 
-    x0 = X[:,0]
-    x1 = X[:,1]
-    x2 = X[:,2]
-    x3 = X[:,3]
+    r, theta, phi = ru.getSphericalCoords(X, pars)
 
-    surface = np.fabs(x2-0.5*np.pi) < 0.1
+    surface = np.fabs(theta-0.5*np.pi) < 0.1
 
-    F[surface] = 1.0 + 0.5*np.cos(x3[surface])
+    F[surface] = 1.0 + 0.5*np.cos(phi)
     return F
 
-def plotMap(ax, mapFilename):
+def plotMap(ax, filename):
 
-    f = h5.File(mapFilename, "r")
-    skyLoc = f["Map/thC"][...]
-    t0 = f["Map/t0"][...]
-    X0 = f["Map/x0"][...]
-    U0 = f["Map/u0"][...]
-    t1 = f["Map/t"][:,0]
-    X1 = f["Map/x"][:,0,:]
-    U1 = f["Map/u"][:,0,:]
-    f.close()
+    map = ru.loadMap(filename)
+    pars = ru.loadPars(filename)
 
-    thC = skyLoc[:,0]
-    phC = skyLoc[:,1]
+    t1 = map.T[:,0]
+    X1 = map.X[:,0,:]
+    U1 = map.U[:,0,:]
 
-    F = intensity_face(X1, U1)
-    #F = intensity(X1, U1)
+    F = intensity_face(X1, U1, pars)
+    #F = intensity(X1, U1, pars)
 
     print(F.min(), F.max())
 
-    ax.tricontourf(phC, thC, F, 256, cmap=mpl.cm.inferno)
-    ax.set_xlim(phC.max(), phC.min())
-    ax.set_ylim(thC.max(), thC.min())
+    ax.tricontourf(map.phiC, map.thetaC, F, 256, cmap=mpl.cm.inferno)
+    ax.set_xlim(map.phiC.max(), map.phiC.min())
+    ax.set_ylim(map.thetaC.max(), map.thetaC.min())
     ax.set_aspect('equal')
 
-def plotMapNice(mapFilename):
-
-    f = h5.File(mapFilename, "r")
-    skyLoc = f["Map/thC"][...]
-    t = f["Map/t"][...]
-    X0 = f["Map/x0"][...]
-    U0 = f["Map/u0"][...]
-    X1 = f["Map/x1"][...]
-    U1 = f["Map/u1"][...]
-    f.close()
-
-    thC = skyLoc[:,0]
-    phC = skyLoc[:,1]
-
-    F = intensity(X1, U1)
-
-    lat = 0.5*np.pi - thC
-    lon = phC.copy()
-    while (lon > np.pi).any():
-        lon[lon>np.pi] -= 2*np.pi
-    while (lon < -np.pi).any():
-        lon[lon<-np.pi] += 2*np.pi
-
-    #lon *= 180.0/np.pi
-    #lat *= 180.0/np.pi
-
-    print(lat.min(), lat.max())
-    print(lon.min(), lon.max())
-    print(F.min(), F.max())
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='hammer')
-
-    numt = len(thC)
-
-    ax.tricontourf(lat, lon, F, 256, cmap=mpl.cm.inferno)
-
-    fig.savefig('map.png')
-    plt.close(fig)
-
-def plotAll(mapFilename):
+def plotAll(filename):
 
     fig, ax = plt.subplots(2,2, figsize=(12,9))
 
-    f = h5.File(mapFilename)
-
-    for trackName in f['Tracks']:
-        t = f['Tracks'][trackName]['t'][...]
-        x = f['Tracks'][trackName]['x'][...]
-        x0 = x[:,0]
-        x1 = x[:,1]
-        x2 = x[:,2]
-        x3 = x[:,3]
-        #t, x0, x1, x2, x3 = np.loadtxt(trackFilename, usecols=[0,1,2,3,4],
-        #                                unpack=True)
+    tracks = ru.loadTracks(filename)
+    
+    for track in tracks:
+        x0 = track.x[:,0]
+        x1 = track.x[:,1]
+        x2 = track.x[:,2]
+        x3 = track.x[:,3]
 
         ax[0,0].plot(x1, x2, 'k', alpha=0.3)
         ax[0,1].plot(x3, x2, 'k', alpha=0.3)
         ax[1,0].plot(x1, x3, 'k', alpha=0.3)
-        #x = x1*np.sin(x2)*np.cos(x3)
-        #y = x1*np.sin(x2)*np.sin(x3)
-        #z = x1*np.cos(x2)
-        #ax[0,0].plot(x, y, 'k', alpha=0.3)
-        #ax[0,1].plot(z, y, 'k', alpha=0.3)
-        #ax[1,0].plot(x, z, 'k', alpha=0.3)
-
-    f.close()
 
     ax[0,0].set_xlabel(r'$x^1$')
     ax[0,0].set_ylabel(r'$x^2$')
@@ -179,11 +88,12 @@ def plotAll(mapFilename):
     ax[1,0].set_xlabel(r'$x^1$')
     ax[1,0].set_ylabel(r'$x^3$')
 
-    plotMap(ax[1,1], mapFilename)
+    plotMap(ax[1,1], filename)
 
     fig.tight_layout()
     fig.savefig("plot.png")
     plt.close(fig)
+
 
 if __name__ == "__main__":
 
@@ -191,4 +101,3 @@ if __name__ == "__main__":
         print("Need a map file")
 
     plotAll(sys.argv[1])
-    #plotMapNice(sys.argv[1])

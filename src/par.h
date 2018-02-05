@@ -1,10 +1,13 @@
 #ifndef RAY_PAR
 #define RAY_PAR
 
+#define MAXSTRLEN 256
+
 enum{VAR_DBL, VAR_INT, VAR_LON, VAR_STR};
 
 struct parList
 {
+    char filename[MAXSTRLEN];
     int metric;
     int surface;
     int meshType;
@@ -25,6 +28,7 @@ struct parList
 };
 
 const static struct parList PAR_DEFAULT = {
+    .filename = "map.h5",
     .metric = 0,
     .surface = 0,
     .meshType = 0,

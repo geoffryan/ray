@@ -5,7 +5,7 @@
 #include "varr.h"
 
 void trace(struct Camera *cam, double tMAX, int nhits, int ntracks, 
-            void *args);
+            void *args, char *filename);
 
 int trace_single(int *status, int *iter, double *t1, double *xu1, 
                 double t0, double *xu0, double tMAX, int ntracks, 

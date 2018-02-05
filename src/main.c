@@ -19,12 +19,13 @@ int main(int argc, char *argv[])
     }
 
     struct parList pars = PAR_DEFAULT;
+
     struct Camera cam = CAMERA_DEFAULT;
     read_pars(&pars, argv[1]);
     print_pars(&pars, NULL);
 
-    output_h5_init("map.h5");
-    output_par_h5(&pars, "map.h5");
+    output_h5_init(pars.filename);
+    output_par_h5(&pars, pars.filename);
 
     int err = 0;
     err += setup_metric(&pars);
@@ -44,8 +45,7 @@ int main(int argc, char *argv[])
     double args[4] = {1.0, 1.0, 16, 0.015625};
     double tMAX = 2*pars.distance;
 
-    imageEul(&cam, x, tMAX, pars.nhits, pars.ntracks, args);
-
+    imageEul(&cam, x, tMAX, pars.nhits, pars.ntracks, args, pars.filename);
 
     free_camera(&cam);
 

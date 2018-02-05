@@ -1,8 +1,9 @@
+Filename    map.h5  // Filename for output
 Metric      3       // 0 Flat-Cartesian, 1 Flat-Spherical, 2 Schwarzschild,
                     // 3 Schwarzschild-KerrSchildSpherical,
                     // 4 Schwarzschild-KerrSchildCartesian,
                     // 5 Binary-KerrSchildCartesian
-Surface     1       // 0 Equator, 1 Sky
+Surface     0       // 0 Equator, 1 Sky
 
 MeshType    0       // 0 Rectangular Array
 
@@ -11,10 +12,10 @@ N1          32
 N2          32
 
 //Number of hits on target surface to record for each ray
-nhits       2
+nhits       1
 
 //Number of tracks to record
-ntracks     10
+ntracks     100
 
 //Observer's Theta (X1) and Phi (X2) range.
 //By default Observer's x-axis is directed towards the origin.

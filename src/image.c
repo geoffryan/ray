@@ -3,7 +3,7 @@
 #include "image.h"
 
 void imageEul(struct Camera *cam, double *x, double tMAX, int nhits,
-                int ntracks, void *args)
+                int ntracks, void *args, char *filename)
 {
     double g[16], e[16];
     metric_g(g, x, args);
@@ -12,5 +12,5 @@ void imageEul(struct Camera *cam, double *x, double tMAX, int nhits,
 
     camera_set_position(cam, x, u, args);
 
-    trace(cam, tMAX, nhits, ntracks, args);
+    trace(cam, tMAX, nhits, ntracks, args, filename);
 }
