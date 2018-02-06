@@ -46,10 +46,12 @@ void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
                 xu0[4+mu] += g[4*mu+nu]*k[nu];
         }
 
+        /*
         printf("   x: %.6lf %.6lf %.6lf %.6lf\n",
                     xu0[0], xu0[1], xu0[2], xu0[3]);
         printf("   u: %.6lf %.6lf %.6lf %.6lf\n",
                     xu0[4], xu0[5], xu0[6], xu0[7]);
+        */
 
         double t0, tHits[maxhits], xuHits[8*maxhits];
         int status, iter, id;
@@ -255,7 +257,7 @@ void trace_interpolateToSurface(double *t, double *xu, double ta, double *xua,
     c2 = -3*fa - 2*(tb-ta)*ma + 3*fb - (tb-ta)*mb;
     c3 = 2*fa + (tb-ta)*ma - 2*fb + (tb-ta)*mb;
   
-    
+    /*
     printf("ta: %.14lg\n", ta);
     printf("xua: %.14lg %.14lg %.14lg %.14lg\n",
             xua[0], xua[1], xua[2], xua[3]);
@@ -266,7 +268,7 @@ void trace_interpolateToSurface(double *t, double *xu, double ta, double *xua,
             xub[0], xub[1], xub[2], xub[3]);
     printf("xudotb: %.14lg %.14lg %.14lg %.14lg\n",
             xudotb[0], xudotb[1], xudotb[2], xudotb[3]);
-    
+    */
 
     //Find intersection of interpolant and surface
     double s, ds, f, df;
@@ -295,8 +297,10 @@ void trace_interpolateToSurface(double *t, double *xu, double ta, double *xua,
     }
     *t = (1-s)*ta + s*tb;
 
+    /*
     printf("s: %.14lg\n", s);
     printf("t: %.14lg\n", *t);
     printf("xu: %.14lg %.14lg %.14lg %.14lg\n",
             xu[0], xu[1], xu[2], xu[3]);
+    */
 }

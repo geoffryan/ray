@@ -2,7 +2,8 @@ Filename    map.h5  // Filename for output
 Metric      3       // 0 Flat-Cartesian, 1 Flat-Spherical, 2 Schwarzschild,
                     // 3 Schwarzschild-KerrSchildSpherical,
                     // 4 Schwarzschild-KerrSchildCartesian,
-                    // 5 Binary-KerrSchildCartesian
+                    // 5 Schwarzschild-KerrSchildCartesian-NumericalDerivative,
+                    // 6 Binary-KerrSchildCartesian
 Surface     0       // 0 Equator, 1 Sky
 Observer    1       // 0 Eulerian, 1 At Rest
 

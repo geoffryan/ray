@@ -25,7 +25,7 @@ void  metric_g_schw_ks_cart(double *g, double *X, void *args)
     double R = sqrt(x*x + y*y + z*z);
     double H = M/R;
 
-    double k[4] = {1.0, -x/R, -y/R, -z/R};
+    double k[4] = {1.0, x/R, y/R, z/R};
 
     int mu, nu;
     for(mu=0; mu<4; mu++)
@@ -41,7 +41,45 @@ void  metric_g_schw_ks_cart(double *g, double *X, void *args)
         }
 }
 
-void metric_dg_schw_ks_cart(double *dg, double *x, void *args)
+void metric_dg_schw_ks_cart(double *dg, double *X, void *args)
+{
+    int i, mu, nu;
+    
+    double x = X[1];
+    double y = X[2];
+    double z = X[3];
+
+    double M = ((double *)args)[0];
+    double R = sqrt(x*x + y*y + z*z);
+    double H = 2*M/R;
+    double k[4] = {1.0, x/R, y/R, z/R};
+    double dkdXi[4] = {0.0, 0.0, 0.0, 0.0};
+    double dXdXi[4] = {0.0, 0.0, 0.0, 0.0};
+
+    for(mu=0; mu<16; mu++)
+        dg[mu] = 0.0;
+
+    for(i=1; i<4; i++)
+    {
+        for(mu=0; mu<4; mu++)
+            dXdXi[mu] = 0.0;
+        dXdXi[i] = 1.0;
+        double dRdXi = X[i]/R;
+        double dHdXi = -H*dRdXi/R;
+        for(mu=1;mu<4; mu++)
+            dkdXi[mu] = (R*dXdXi[mu] - X[mu]*dRdXi)/(R*R);
+
+        for(mu=0; mu<4; mu++)
+            for(nu=0; nu<=mu; nu++)
+                dg[16*i+4*mu+nu] = dHdXi*k[mu]*k[nu]
+                                    + H*(dkdXi[mu]*k[nu]+k[mu]*dkdXi[nu]);
+        for(mu=0; mu<4; mu++)
+            for(nu=mu+1; nu<4; nu++)
+                dg[16*i+4*mu+nu] = dg[16*i+4*nu+mu];
+    }
+}
+
+void metric_dg_schw_ks_nd_cart(double *dg, double *x, void *args)
 {
     double dx = 1.0e-6;
     int mu;
