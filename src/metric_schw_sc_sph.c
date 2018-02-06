@@ -46,7 +46,7 @@ int metric_shadow_schw_sc_sph(double *x, void *args)
 {
     double M = ((double *)args)[0];
 
-    if(x[1] < (2.0 + 1.0e-6)*M)
+    if(x[1] < (2.0 + 1.0e-5)*M)
         return 1;
     return 0;
 }

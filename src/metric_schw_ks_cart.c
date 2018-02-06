@@ -70,7 +70,7 @@ int metric_shadow_schw_ks_cart(double *X, void *args)
     double z = X[3];
 
     double R = sqrt(x*x + y*y + z*z);
-    if(R < (2.0 + 1.0e-6)*M)
+    if(R < (2.0 + 1.0e-5)*M)
         return 1;
     return 0;
 }

@@ -3,5 +3,7 @@ bin/*
 obj/*
 *.txt
 *.png
+*.mp4
 *.h5
+*.pyc
 *.swp

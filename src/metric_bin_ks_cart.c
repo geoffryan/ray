@@ -130,7 +130,7 @@ int metric_shadow_bin_ks_cart(double *X, void *args)
     double R1 = sqrt((x-x1)*(x-x1) + (y-y1)*(y-y1) + z*z);
     double R2 = sqrt((x-x2)*(x-x2) + (y-y2)*(y-y2) + z*z);
 
-    if(R1 < (2.0 + 1.0e-6)*M1 || R2 < (2.0 + 1.0e-6)*M2)
+    if(R1 < (2.0 + 1.0e-5)*M1 || R2 < (2.0 + 1.0e-5)*M2)
         return 1;
     return 0;
 }

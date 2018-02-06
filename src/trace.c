@@ -139,8 +139,16 @@ int trace_single(int *iter, int *nhits, double *tHits, double *xuHits,
 
             if(id >= 0)
             {
-                varr_append(track, t);
-                varr_append_chunk(track, xu1, 8);
+                if(hit_status != 0)
+                {
+                    varr_append(track, tHits[ihit-1]);
+                    varr_append_chunk(track, xuHits[8*(ihit-1)], 8);
+                }
+                else
+                {
+                    varr_append(track, t);
+                    varr_append_chunk(track, xu1, 8);
+                }
             }
 
             //printf("        target - status: %.6d\n", status);
