@@ -38,15 +38,20 @@ The executable `ray` lives in `bin/`.  It requires a parameter file (such as the
 $ bin/ray in.par
 ```
 
-This will produce an HDF5 file `map.h5` which contains the skymap of the specified observer, and several `track_????.txt` files which contain the full trajectory data for several individual rays.
+This will produce an HDF5 file (by default `map.h5`) which contains the skymap of the specified observer, a copy of the runtime paramerters, and several tracks which contain the full trajectory data for several individual rays.
 
 ## Visualizing
 
-An example visualization script `plotAll.py` lives in `vis/`.  It will produce a plot (`plot.png`) showing projections of the tracks and the observer's view. The default image is a winking smiley face, whose orientation can be used for debugging purposes.
+Utilities for interacting with and visualizing the `ray` data live in `vis/`, including example visualization scripts `plotAll.py`, `plotFace.py`, and `plotMovingFace.py`.  All can be run on the command line and take as input a `ray` HDF5 file. 
 
 ```bash
 $ python vis/plotAll.py map.h5 track_*.txt
 ```
+
+`plotAll.py` produces a plot (`plot.png`) showing projections of the tracks and the observer's view. The default image is a winking smiley face, whose orientation can be used for debugging purposes (open eye is -x,+y quadrant, closed eye +x,+y quadrant, and the smile on the -y half plane).
+
+`plotFace.py` and `plotMovingFace.py` only produce observer images of the smiley face.
+
 
 ## Acknowledgements
 
