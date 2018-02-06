@@ -2,6 +2,7 @@
 #include <math.h>
 #include "par.h"
 #include "camera.h"
+#include "output.h"
 #include "ode.h"
 #include "metric.h"
 #include "image.h"
@@ -46,10 +47,11 @@ int main(int argc, char *argv[])
     double tMAX = 2*pars.distance;
 
     if(pars.observer == 0)
-        imageEul(&cam, x, tMAX, pars.nhits, pars.ntracks, args, pars.filename);
+        imageEul(&cam, x, tMAX, pars.nhits, pars.ntracks, args, pars.filename,
+                    pars.fancyPrinting);
     else if(pars.observer == 1)
         imageRest(&cam, x, tMAX, pars.nhits, pars.ntracks, args,
-                    pars.filename);
+                    pars.filename, pars.fancyPrinting);
     else
         printf("\n Bad observer choice: %d", pars.observer);
 

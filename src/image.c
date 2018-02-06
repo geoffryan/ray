@@ -5,7 +5,7 @@
 #include "image.h"
 
 void imageEul(struct Camera *cam, double *x, double tMAX, int nhits,
-                int ntracks, void *args, char *filename)
+                int ntracks, void *args, char *filename, int fancyPrinting)
 {
     double g[16], e[16];
     metric_g(g, x, args);
@@ -15,11 +15,11 @@ void imageEul(struct Camera *cam, double *x, double tMAX, int nhits,
     camera_set_position(cam, x, u, args);
     camera_print(cam);
 
-    trace(cam, tMAX, nhits, ntracks, args, filename);
+    trace(cam, tMAX, nhits, ntracks, args, filename, fancyPrinting);
 }
 
 void imageRest(struct Camera *cam, double *x, double tMAX, int nhits,
-                int ntracks, void *args, char *filename)
+                int ntracks, void *args, char *filename, int fancyPrinting)
 {
     double g[16];
     metric_g(g, x, args);
@@ -34,5 +34,5 @@ void imageRest(struct Camera *cam, double *x, double tMAX, int nhits,
     camera_set_position(cam, x, u, args);
     camera_print(cam);
 
-    trace(cam, tMAX, nhits, ntracks, args, filename);
+    trace(cam, tMAX, nhits, ntracks, args, filename, fancyPrinting);
 }

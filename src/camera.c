@@ -12,11 +12,18 @@ int setup_camera(struct Camera *cam, struct parList *par)
 
     cam->meshType = meshType;
     cam->N = N;
+    cam->Nt = Nt;
+    cam->Np = Np;
 
     double ta = par->X1a * M_PI;
     double tb = par->X1b * M_PI;
     double pa = par->X2a * M_PI;
     double pb = par->X2b * M_PI;
+
+    cam->thetaMax = tb;
+    cam->thetaMin = ta;
+    cam->phiMax = pb;
+    cam->phiMin = pa;
 
     double *t = (double *)malloc(Nt * sizeof(double));
     double *p = (double *)malloc(Np * sizeof(double));
@@ -55,6 +62,7 @@ void camera_print(struct Camera *cam)
                                             cam->e[11]);
     printf("   (%.6e, %.6e, %.6e, %.6e)\n", cam->e[12], cam->e[13], cam->e[14],
                                             cam->e[15]);
+    printf("N: %d\n", cam->N);
 }
 
 void camera_set_position(struct Camera *cam, double *x, double *u, void *args)

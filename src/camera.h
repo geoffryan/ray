@@ -15,6 +15,12 @@ struct Camera
     int N;
 
     double *thC;
+    double thetaMax;
+    double thetaMin;
+    double phiMax;
+    double phiMin;
+    int Nt;
+    int Np;
 };
 
 const static struct Camera CAMERA_DEFAULT = {
@@ -24,6 +30,12 @@ const static struct Camera CAMERA_DEFAULT = {
     .meshType = 0,
     .N = 0,
     .thC = NULL,
+    .thetaMax = 0.0,
+    .thetaMin = 0.0,
+    .phiMax = 0.0,
+    .phiMin = 0.0,
+    .Nt = 0,
+    .Np = 0
 };
 
 int setup_camera(struct Camera *cam, struct parList *par);

@@ -8,11 +8,10 @@
 #include "trace.h"
 
 void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
-            void *args, char *filename)
+            void *args, char *filename, int fancy_printing)
 {
     int mu, nu, i, n;
     double g[16];
-    FILE *f;
 
     int N = cam->N;
     srand(27181);
@@ -31,9 +30,31 @@ void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
 
     metric_g(g, cam->X, args);
 
+    int Np = cam->Np;
+    int Nt = cam->Nt;
+    double aspect = fabs((cam->phiMax-cam->phiMin)
+                            /(cam->thetaMax-cam->thetaMin));
+
+    int Ny = 16;
+    int Nx = 2*Ny*aspect*1.01;
+    char line[Nx+1];
+    double avgs[Nx];
+    double nx = ((double)Np) / Nx;
+    double ny = ((double)Nt) / Ny;
+
+    for(i=0; i<Nx; i++)
+        line[i] = ' ';
+    line[Nx] = '\0';
+    for(i=0; i<Nx; i++)
+        avgs[i] = 0.0;
+
+    if(fancy_printing)
+        printf("\r%s %.1lf%%", line, 0.0);
+    else
+        printf("%.1lf%%", 0.0);
+
     for(n=0; n<N; n++)
     {
-        printf("Integrating ray %d\n", n);
         double xu0[8];
         for(mu=0; mu<4; mu++)
             xu0[mu] = cam->X[mu];
@@ -64,7 +85,8 @@ void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
         status = trace_single(&iter, &(nhits[n]), tHits, xuHits, t0, xu0, tMAX,
                                 maxhits, id, &track, args);
 
-        printf("    %d iterations - t: %.6lf\n", iter, tHits[nhits[n]-1]);
+
+        //printf("    %d iterations - t: %.6lf\n", iter, tHits[nhits[n]-1]);
 
         map[buf_width * n + 0] = cam->thC[2*n];
         map[buf_width * n + 1] = cam->thC[2*n+1];
@@ -83,7 +105,41 @@ void trace(struct Camera *cam, double tMAX, int maxhits, int ntracks,
             output_track_h5(&track, id, filename);
         
         varr_clear(&track);
+
+        avgs[(int)((n%Np) / nx)] += ((double)status) / (nx*ny);
+        
+        if(fancy_printing
+            && (((int) ((float)1000*n)/N) != ((int) ((float)1000*(n+1))/N)
+                || (n+1)%Np == 0 ||n == N-1))
+        {
+            for(i=0; i<Nx; i++)
+            {
+                if(avgs[i] < 0.0)
+                    line[i] = 'o';
+                else if(avgs[i] < 1.0)
+                    line[i] = '*';
+                else
+                    line[i] = '+';
+            }
+            if(((int) (((n+1)/Np)/ny)) != ((int) ((n/Np)/ny)) && n<N-1)
+            {
+                printf("\r%s       \n", line);
+                for(i=0; i<Nx; i++)
+                {
+                    line[i] = ' ';
+                    avgs[i] = 0.0;
+                }
+            }
+            printf("\r%s %.1lf%%", line, (100.0*(n+1))/N);
+            fflush(stdout);
+        }
+        else if( ((int) ((float)1000*n)/N) != ((int) ((float)1000*(n+1))/N) )
+        {
+            printf("\r%.1lf%%", (100.0*(n+1))/N);
+            fflush(stdout);
+        }
     }
+    printf("\n");
 
     output_map_h5(map, nhits, N, buf_width, filename);
 
@@ -111,7 +167,7 @@ int trace_single(int *iter, int *nhits, double *tHits, double *xuHits,
         double dt = -1.0e-6;
         double dt0;
 
-        int hit_status;
+        int hit_status = 0;
 
         if(id >= 0)
         {
@@ -239,7 +295,6 @@ void trace_interpolateToSurface(double *t, double *xu, double ta, double *xua,
                                 double tb, double *xub, void *args)
 {
     double atol = 1.0e-8;
-    double rtol = 1.0e-8;
 
     double xudota[8], xudotb[8];
     trace_xudot(ta, xua, args, xudota);

@@ -33,3 +33,4 @@ distance    1.0e5
 inclination 45.0
 azimuth     0.0
 
+FancyPrinting   0

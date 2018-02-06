@@ -23,9 +23,7 @@ struct parList
     double distance;
     double inclination;
     double azimuth;
-    int imDim;
-    double imX;
-    int imPiFac;
+    int fancyPrinting;
 };
 
 const static struct parList PAR_DEFAULT = {
@@ -44,7 +42,8 @@ const static struct parList PAR_DEFAULT = {
     .X2b = 0.0,
     .distance = 0.0,
     .inclination = 0.0,
-    .azimuth = 0.0
+    .azimuth = 0.0,
+    .fancyPrinting = 0
 };
 
 int readvar(char filename[], char key[], int vtype, void *ptr);

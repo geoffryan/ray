@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "par.h"
 
 int readvar(char filename[], char key[], int vtype, void *ptr)
@@ -96,6 +97,7 @@ void read_pars(struct parList *theParList, char filename[])
     readvar(filename, "inclination",  VAR_DBL, &(theParList->inclination));
     readvar(filename, "azimuth",  VAR_DBL, &(theParList->azimuth));
     readvar(filename, "distance",  VAR_DBL, &(theParList->distance));
+    readvar(filename, "FancyPrinting",  VAR_INT, &(theParList->fancyPrinting));
 }
 
 void print_pars(struct parList *theParList, char filename[])
@@ -123,6 +125,7 @@ void print_pars(struct parList *theParList, char filename[])
     fprintf(f, "distance: %g\n", theParList->distance);
     fprintf(f, "inclination: %g\n", theParList->inclination);
     fprintf(f, "azimuth: %g\n", theParList->azimuth);
+    fprintf(f, "fancyPrinting: %d\n", theParList->fancyPrinting);
 
     if(filename != NULL)
         fclose(f);
