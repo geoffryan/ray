@@ -1,5 +1,5 @@
-Filename    map.4.256.h5  // Filename for output
-Metric      4       // 0 Flat-Cartesian, 1 Flat-Spherical, 2 Schwarzschild,
+Filename    map.h5  // Filename for output
+Metric      3       // 0 Flat-Cartesian, 1 Flat-Spherical, 2 Schwarzschild,
                     // 3 Schwarzschild-KerrSchildSpherical,
                     // 4 Schwarzschild-KerrSchildCartesian,
                     // 5 Binary-KerrSchildCartesian
@@ -8,8 +8,8 @@ Surface     0       // 0 Equator, 1 Sky
 MeshType    0       // 0 Rectangular Array
 
 //Number of rays in each viewing direction
-N1          256
-N2          256
+N1          32
+N2          32
 
 //Number of hits on target surface to record for each ray
 nhits       1
@@ -31,7 +31,3 @@ distance    1.0e5
 inclination 45.0
 azimuth     0.0
 
-//Unused
-imDim       0
-imX         0
-imPiFac     0
