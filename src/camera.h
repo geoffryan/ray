@@ -28,6 +28,7 @@ const static struct Camera CAMERA_DEFAULT = {
 
 int setup_camera(struct Camera *cam, struct parList *par);
 int camera_initialize(struct Camera *cam, struct parList *par);
+void camera_print(struct Camera *cam);
 void camera_set_position(struct Camera *cam, double *x, double *u, void *args);
 void camera_get_ray(struct Camera *cam, double *k, int n);
 void free_camera(struct Camera *cam);

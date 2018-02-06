@@ -45,7 +45,13 @@ int main(int argc, char *argv[])
     double args[4] = {1.0, 1.0, 16, 0.015625};
     double tMAX = 2*pars.distance;
 
-    imageEul(&cam, x, tMAX, pars.nhits, pars.ntracks, args, pars.filename);
+    if(pars.observer == 0)
+        imageEul(&cam, x, tMAX, pars.nhits, pars.ntracks, args, pars.filename);
+    else if(pars.observer == 1)
+        imageRest(&cam, x, tMAX, pars.nhits, pars.ntracks, args,
+                    pars.filename);
+    else
+        printf("\n Bad observer choice: %d", pars.observer);
 
     free_camera(&cam);
 

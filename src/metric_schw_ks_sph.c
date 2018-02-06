@@ -42,7 +42,7 @@ void metric_dg_schw_ks_sph(double *dg, double *x, void *args)
     dg[16*1 + 0] = -2*M/(r*r);
     dg[16*1 + 1] = -2*M/(r*r);
     dg[16*1 + 4] = -2*M/(r*r);
-    dg[16*1 + 5] = -2*M/(r*r) / ((1-2*M/r)*(1-2*M/r));
+    dg[16*1 + 5] = -2*M/(r*r);
     dg[16*1 + 10] = 2.0*r;
     dg[16*1 + 15] = 2.0*r*sint*sint;
     dg[16*2 + 15] = 2.0*r*r*sint*cost;

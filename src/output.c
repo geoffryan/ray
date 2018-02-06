@@ -41,6 +41,9 @@ void output_par_h5(struct parList *pars, char *filename)
     writeSimple(filename, "Pars", "Metric", &(pars->metric), H5T_NATIVE_INT);
     createDataset(filename, "Pars", "Surface", 1, fdims1, H5T_NATIVE_INT);
     writeSimple(filename, "Pars", "Surface", &(pars->surface), H5T_NATIVE_INT);
+    createDataset(filename, "Pars", "Observer", 1, fdims1, H5T_NATIVE_INT);
+    writeSimple(filename, "Pars", "Observer", &(pars->observer), 
+                    H5T_NATIVE_INT);
     
     createDataset(filename, "Pars", "MeshType", 1, fdims1, H5T_NATIVE_INT);
     writeSimple(filename, "Pars", "MeshType", &(pars->meshType),

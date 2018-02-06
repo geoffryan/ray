@@ -83,6 +83,7 @@ void read_pars(struct parList *theParList, char filename[])
     readvar(filename, "Filename",       VAR_STR, &(theParList->filename));
     readvar(filename, "Metric",          VAR_INT, &(theParList->metric));
     readvar(filename, "Surface",          VAR_INT, &(theParList->surface));
+    readvar(filename, "Observer",       VAR_INT, &(theParList->observer));
     readvar(filename, "MeshType",          VAR_INT, &(theParList->meshType));
     readvar(filename, "N1",          VAR_INT, &(theParList->N1));
     readvar(filename, "N2",          VAR_INT, &(theParList->N2));
@@ -95,9 +96,6 @@ void read_pars(struct parList *theParList, char filename[])
     readvar(filename, "inclination",  VAR_DBL, &(theParList->inclination));
     readvar(filename, "azimuth",  VAR_DBL, &(theParList->azimuth));
     readvar(filename, "distance",  VAR_DBL, &(theParList->distance));
-    readvar(filename, "imDim",  VAR_INT, &(theParList->imDim));
-    readvar(filename, "imX",  VAR_DBL, &(theParList->imX));
-    readvar(filename, "imPiFac",  VAR_INT, &(theParList->imPiFac));
 }
 
 void print_pars(struct parList *theParList, char filename[])
@@ -112,6 +110,7 @@ void print_pars(struct parList *theParList, char filename[])
     fprintf(f, "Filename: %s\n", theParList->filename);
     fprintf(f, "Metric: %d\n", theParList->metric);
     fprintf(f, "Surface: %d\n", theParList->surface);
+    fprintf(f, "Observer: %d\n", theParList->observer);
     fprintf(f, "MeshType: %d\n", theParList->meshType);
     fprintf(f, "N1: %d\n", theParList->N1);
     fprintf(f, "N2: %d\n", theParList->N2);
@@ -124,9 +123,6 @@ void print_pars(struct parList *theParList, char filename[])
     fprintf(f, "distance: %g\n", theParList->distance);
     fprintf(f, "inclination: %g\n", theParList->inclination);
     fprintf(f, "azimuth: %g\n", theParList->azimuth);
-    fprintf(f, "imDim: %d\n", theParList->imDim);
-    fprintf(f, "imX: %g\n", theParList->imX);
-    fprintf(f, "imPiFac: %d\n", theParList->imPiFac);
 
     if(filename != NULL)
         fclose(f);

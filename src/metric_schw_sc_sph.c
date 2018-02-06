@@ -17,11 +17,12 @@ void  metric_g_schw_sc_sph(double *g, double *x, void *args)
     for(i=0; i<16; i++)
         g[i] = 0.0;
     double M = ((double *)args)[0];
+    double r = x[1];
     
-    g[0] = -1.0+2*M/x[1];
-    g[5] = 1.0/(1.0-2*M/x[1]);
-    g[10] = x[1]*x[1];
-    g[15] = x[1]*x[1]*sint*sint;
+    g[0] = -1.0+2*M/r;
+    g[5] = -1.0/g[0];
+    g[10] = r*r;
+    g[15] = r*r*sint*sint;
 }
 
 void metric_dg_schw_sc_sph(double *dg, double *x, void *args)

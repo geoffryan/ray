@@ -10,6 +10,7 @@ struct parList
     char filename[MAXSTRLEN];
     int metric;
     int surface;
+    int observer;
     int meshType;
     int N1;
     int N2;
@@ -31,6 +32,7 @@ const static struct parList PAR_DEFAULT = {
     .filename = "map.h5",
     .metric = 0,
     .surface = 0,
+    .observer = 0,
     .meshType = 0,
     .N1 = 1,
     .N2 = 1,
@@ -42,10 +44,7 @@ const static struct parList PAR_DEFAULT = {
     .X2b = 0.0,
     .distance = 0.0,
     .inclination = 0.0,
-    .azimuth = 0.0,
-    .imDim = -1,
-    .imX = 0.0,
-    .imPiFac = 0.0
+    .azimuth = 0.0
 };
 
 int readvar(char filename[], char key[], int vtype, void *ptr);

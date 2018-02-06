@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "metric.h"
 #include "camera.h"
 
@@ -38,6 +39,22 @@ int setup_camera(struct Camera *cam, struct parList *par)
     free(p);
 
     return 0;
+}
+
+void camera_print(struct Camera *cam)
+{
+    printf("X: (%.6e, %.6e, %.6e, %.6e)\n", cam->X[0], cam->X[1], cam->X[2],
+                                            cam->X[3]);
+    printf("U: (%.6e, %.6e, %.6e, %.6e)\n", cam->U[0], cam->U[1], cam->U[2],
+                                            cam->U[3]);
+    printf("e: (%.6e, %.6e, %.6e, %.6e)\n", cam->e[0], cam->e[1], cam->e[2],
+                                            cam->e[3]);
+    printf("   (%.6e, %.6e, %.6e, %.6e)\n", cam->e[4], cam->e[5], cam->e[6],
+                                            cam->e[7]);
+    printf("   (%.6e, %.6e, %.6e, %.6e)\n", cam->e[8], cam->e[9], cam->e[10],
+                                            cam->e[11]);
+    printf("   (%.6e, %.6e, %.6e, %.6e)\n", cam->e[12], cam->e[13], cam->e[14],
+                                            cam->e[15]);
 }
 
 void camera_set_position(struct Camera *cam, double *x, double *u, void *args)

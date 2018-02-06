@@ -142,7 +142,7 @@ int trace_single(int *iter, int *nhits, double *tHits, double *xuHits,
                 if(hit_status != 0)
                 {
                     varr_append(track, tHits[ihit-1]);
-                    varr_append_chunk(track, xuHits[8*(ihit-1)], 8);
+                    varr_append_chunk(track, &(xuHits[8*(ihit-1)]), 8);
                 }
                 else
                 {

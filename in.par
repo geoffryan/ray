@@ -4,6 +4,7 @@ Metric      3       // 0 Flat-Cartesian, 1 Flat-Spherical, 2 Schwarzschild,
                     // 4 Schwarzschild-KerrSchildCartesian,
                     // 5 Binary-KerrSchildCartesian
 Surface     0       // 0 Equator, 1 Sky
+Observer    1       // 0 Eulerian, 1 At Rest
 
 MeshType    0       // 0 Rectangular Array
 
