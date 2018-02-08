@@ -1,8 +1,8 @@
 import h5py as h5
 import numpy as np
 
-sphMetrics = [1,2,3]
-cartMetrics = [0,4,5]
+sphMetrics = [1,2,3,6]
+cartMetrics = [0,4,5,7]
 
 class Track:
 

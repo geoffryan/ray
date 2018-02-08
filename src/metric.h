@@ -67,6 +67,12 @@ int metric_fix_domain_schw_ks_cart(double *x, double *u, void *args);
 
 void metric_dg_schw_ks_nd_cart(double *dg, double *x, void *args);
 
+int metric_orientation_kerr_bl_sph();
+void metric_g_kerr_bl_sph(double *g, double *x, void *args);
+void metric_dg_kerr_bl_sph(double *dg, double *x, void *args);
+int metric_shadow_kerr_bl_sph(double *x, void *args);
+int metric_fix_domain_kerr_bl_sph(double *x, double *u, void *args);
+
 int  metric_orientation_bin_ks_cart();
 void  metric_g_bin_ks_cart(double *g, double *x, void *args);
 void metric_dg_bin_ks_cart(double *dg, double *x, void *args);

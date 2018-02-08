@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     double x[4] = {0.0, 0.0, 0.0, 0.0};
     metric_genPosFromSph(pars.distance, pars.inclination, pars.azimuth, x);
-    double args[4] = {1.0, 1.0, 16, 0.015625};
+    double args[4] = {1.0, 0.5, 16, 0.015625};
     double tMAX = 2*pars.distance;
 
     if(pars.observer == 0)

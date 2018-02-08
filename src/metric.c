@@ -75,6 +75,15 @@ int setup_metric(struct parList *pars)
     }
     else if(choice == 6)
     {
+        metric_orientation = &metric_orientation_kerr_bl_sph;
+        metric_g  = &metric_g_kerr_bl_sph;
+        metric_dg = &metric_dg_kerr_bl_sph;
+        metric_shadow = &metric_shadow_kerr_bl_sph;
+        metric_fix_domain = &metric_fix_domain_kerr_bl_sph;
+        metric_genPosFromSph = &metric_genPosFromSph_sph;
+    }
+    else if(choice == 7)
+    {
         metric_orientation = &metric_orientation_bin_ks_cart;
         metric_g  = &metric_g_bin_ks_cart;
         metric_dg = &metric_dg_bin_ks_cart;
