@@ -90,6 +90,10 @@ void read_pars(struct parList *theParList, char filename[])
     readvar(filename, "N2",          VAR_INT, &(theParList->N2));
     readvar(filename, "nhits",        VAR_INT, &(theParList->nhits));
     readvar(filename, "ntracks",        VAR_INT, &(theParList->ntracks));
+    readvar(filename, "metricArg1",     VAR_DBL, &(theParList->metricArg1));
+    readvar(filename, "metricArg2",     VAR_DBL, &(theParList->metricArg2));
+    readvar(filename, "metricArg3",     VAR_DBL, &(theParList->metricArg3));
+    readvar(filename, "metricArg4",     VAR_DBL, &(theParList->metricArg4));
     readvar(filename, "X1a",          VAR_DBL, &(theParList->X1a));
     readvar(filename, "X1b",          VAR_DBL, &(theParList->X1b));
     readvar(filename, "X2a",          VAR_DBL, &(theParList->X2a));
@@ -118,6 +122,10 @@ void print_pars(struct parList *theParList, char filename[])
     fprintf(f, "N2: %d\n", theParList->N2);
     fprintf(f, "nhits: %d\n", theParList->nhits);
     fprintf(f, "ntracks: %d\n", theParList->ntracks);
+    fprintf(f, "metricArg1: %g\n", theParList->metricArg1);
+    fprintf(f, "metricArg2: %g\n", theParList->metricArg2);
+    fprintf(f, "metricArg3: %g\n", theParList->metricArg3);
+    fprintf(f, "metricArg4: %g\n", theParList->metricArg4);
     fprintf(f, "X1a: %g\n", theParList->X1a);
     fprintf(f, "X1b: %g\n", theParList->X1b);
     fprintf(f, "X2a: %g\n", theParList->X2a);

@@ -16,6 +16,10 @@ struct parList
     int N2;
     int nhits;
     int ntracks;
+    double metricArg1;
+    double metricArg2;
+    double metricArg3;
+    double metricArg4;
     double X1a;
     double X1b;
     double X2a;
@@ -36,6 +40,10 @@ const static struct parList PAR_DEFAULT = {
     .N2 = 1,
     .nhits = 1,
     .ntracks = 100,
+    .metricArg1 = 0.0,
+    .metricArg2 = 0.0,
+    .metricArg3 = 0.0,
+    .metricArg4 = 0.0,
     .X1a = 0.0,
     .X1b = 0.0,
     .X2a = 0.0,
